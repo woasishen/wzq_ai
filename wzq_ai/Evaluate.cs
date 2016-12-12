@@ -11,6 +11,49 @@ namespace wzq_ai
         White = 3,
     }
 
+    public static class CellStatusHelper
+    {
+        public static CellStatus Not(CellStatus s)
+        {
+            switch (s)
+            {
+                case CellStatus.Black:
+                    return CellStatus.White;
+                case CellStatus.White:
+                    return CellStatus.Black;
+            }
+            throw new Exception("cellstatus do not valid to not");
+        }
+    }
+
+    public class Pos
+    {
+        public int X { get; private set; }
+        public int Y { get; private set; }
+
+        public Pos(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
+        public override string ToString()
+        {
+            return string.Format("{0},{1}", X, Y);
+        }
+    }
+
+    public class GolePos
+    {
+        public int Gole { get; private set; }
+        public Stack<Pos> PosStack { get; private set; }
+
+        public GolePos(int gole, Stack<Pos> posStack)
+        {
+            Gole = gole;
+            PosStack = posStack;
+        }
+    }
+
     /// <summary>
     /// 评分规则：
     /// 1) 00000->50000  //5格
@@ -35,51 +78,42 @@ namespace wzq_ai
     /// </summary>
     public class Evaluate
     {
-        private struct Pos
-        {
-            public int X { get; set; }
-            public int Y { get; set; }
-            public override string ToString()
+        private static readonly Dictionary<int, int> Goles =
+            new Dictionary<int, int>
             {
-                return string.Format("{0},{1}", X, Y);
-            }
-        }
-
-        private Dictionary<int, int> goles = new Dictionary<int, int>
-        {
-            {22222, 50000},
-            {122221, 4320},
-            {122211, 720},
-            {112221, 720},
-            {122121, 720},
-            {121221, 720},
-            {22221, 720},
-            {12222, 720},
-            {22122, 720},
-            {21222, 720},
-            {22212, 720},
-            {112211, 720},
-            {112121, 120},
-            {121211, 120},
-            {111211, 20},
-            {112111, 20},
-            {33333, -50000},
-            {133331, -4320},
-            {133311, -720},
-            {113331, -720},
-            {133131, -720},
-            {131331, -720},
-            {33331, -720},
-            {13333, -720},
-            {33133, -720},
-            {31333, -720},
-            {33313, -720},
-            {113311, -720},
-            {113131, -120},
-            {131311, -120},
-            {111311, -20},
-            {113111, -20},
-        };
+                {22222, 50000},
+                {122221, 4320},
+                {122211, 720},
+                {112221, 720},
+                {122121, 720},
+                {121221, 720},
+                {22221, 720},
+                {12222, 720},
+                {22122, 720},
+                {21222, 720},
+                {22212, 720},
+                {112211, 720},
+                {112121, 120},
+                {121211, 120},
+                {111211, 20},
+                {112111, 20},
+                {33333, -50000},
+                {133331, -4320},
+                {133311, -720},
+                {113331, -720},
+                {133131, -720},
+                {131331, -720},
+                {33331, -720},
+                {13333, -720},
+                {33133, -720},
+                {31333, -720},
+                {33313, -720},
+                {113311, -720},
+                {113131, -120},
+                {131311, -120},
+                {111311, -20},
+                {113111, -20},
+            };
 
         private readonly List<Pos[]> pos5 = new List<Pos[]>();//所有可能的5连格
         private readonly List<Pos[]> pos6 = new List<Pos[]>();//所有可能的6连格
@@ -91,51 +125,51 @@ namespace wzq_ai
             }
 
             //横的5连
-            AddDirectPos(height, width, 5, pos5, (y, x) => new Pos { X = x, Y = y });
+            AddDirectPos(height, width, 5, pos5, (y, x) => new Pos(x, y));
             //横的6连
-            AddDirectPos(height, width, 6, pos6, (y, x) => new Pos { X = x, Y = y });
+            AddDirectPos(height, width, 6, pos6, (y, x) => new Pos(x, y));
 
             //竖的5连
-            AddDirectPos(width, height, 5, pos5, (x, y) => new Pos { X = x, Y = y });
+            AddDirectPos(width, height, 5, pos5, (x, y) => new Pos(x, y));
             //竖的6连
-            AddDirectPos(width, height, 6, pos6, (x, y) => new Pos { X = x, Y = y });
+            AddDirectPos(width, height, 6, pos6, (x, y) => new Pos(x, y));
 
             //正对角的5连
-            AddDiagonalPos(width, height, 5, pos5, (x, y) => new Pos {X = x, Y = y});
+            AddDiagonalPos(width, height, 5, pos5, (x, y) => new Pos(x, y));
             //正对角的6连
-            AddDiagonalPos(width, height, 6, pos6, (x, y) => new Pos { X = x, Y = y });
+            AddDiagonalPos(width, height, 6, pos6, (x, y) => new Pos(x, y));
 
             //反对角的5连
-            AddDiagonalPos(width, height, 5, pos5, (x, y) => new Pos { X = width - x - 1, Y = y });
+            AddDiagonalPos(width, height, 5, pos5, (x, y) => new Pos(width - x - 1, y));
             //反对角的6连
-            AddDiagonalPos(width, height, 6, pos6, (x, y) => new Pos { X = width -  x - 1, Y = y });
+            AddDiagonalPos(width, height, 6, pos6, (x, y) => new Pos(width - x - 1, y));
         }
 
-        public int Compute(CellStatus[][] cellArr)
+        public int ComputeGole(CellStatus[][] cellArr)
         {
             var result = 0;
             foreach (var pos5Item in pos5)
             {
-                var tempItemKey = pos5Item.Aggregate(0, (current, t) => current*10 + (int) cellArr[t.X][t.Y]);
-                if (goles.ContainsKey(tempItemKey))
+                var tempItemKey = pos5Item.Aggregate(0, (current, t) => current * 10 + (int)cellArr[t.X][t.Y]);
+                if (Goles.ContainsKey(tempItemKey))
                 {
-                    result += goles[tempItemKey];
+                    result += Goles[tempItemKey];
                 }
             }
             foreach (var pos6Item in pos6)
             {
                 var tempItemKey = pos6Item.Aggregate(0, (current, t) => current * 10 + (int)cellArr[t.X][t.Y]);
-                if (goles.ContainsKey(tempItemKey))
+                if (Goles.ContainsKey(tempItemKey))
                 {
-                    result += goles[tempItemKey];
+                    result += Goles[tempItemKey];
                 }
             }
             return result;
         }
 
         private void AddDirectPos(
-            int width, int height, int length, 
-            List<Pos[]> posArr, 
+            int width, int height, int length,
+            List<Pos[]> posArr,
             Func<int, int, Pos> genPos)
         {
             for (var i = 0; i < width; i++)

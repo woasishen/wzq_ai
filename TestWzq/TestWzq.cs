@@ -9,8 +9,8 @@ namespace wzq_ai
 {
     public partial class TestWzq : Form
     {
-        private const int CELL_W = 15;
-        private const int CELL_H = 15;
+        private const int CELL_W = 6;
+        private const int CELL_H = 6;
         private const float ITEM_SIZE_SCALE = 0.5f;
         private static readonly Dictionary<CellStatus, Brush> CellBrush =
             new Dictionary<CellStatus, Brush>
@@ -20,16 +20,16 @@ namespace wzq_ai
             };
         private float cellWStep;
         private float cellHStep;
-        private readonly Evaluate evaluate;
+        private readonly MaxMin maxMin;
         private readonly CellStatus[][] cellArr;
         private readonly Pen linePen = new Pen(Color.Black, 1);
         private float itemDiameter;
-        private bool isManual = true;
+        private bool isBlack = true;
         
         public TestWzq()
         {
             InitializeComponent();
-            evaluate = new Evaluate(CELL_W, CELL_H);
+            maxMin = new MaxMin(3, CELL_W, CELL_H);
             cellArr = new CellStatus[CELL_W][];
             for (var i = 0; i < cellArr.Length; i++)
             {
@@ -107,9 +107,10 @@ namespace wzq_ai
             {
                 return;
             }
-            cellArr[x][y] = isManual ? CellStatus.Black : CellStatus.White;
-            isManual = !isManual;
+            cellArr[x][y] = isBlack ? CellStatus.Black : CellStatus.White;
+            isBlack = !isBlack;
             Refresh();
+            var result = maxMin.GeneBestPos(cellArr, isBlack ? CellStatus.Black : CellStatus.White, 3);
         }
     }
 }

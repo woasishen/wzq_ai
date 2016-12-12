@@ -28,7 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.goldLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
+            // 
+            // goldLabel
+            // 
+            this.goldLabel.AutoSize = true;
+            this.goldLabel.Location = new System.Drawing.Point(265, 2);
+            this.goldLabel.Name = "goldLabel";
+            this.goldLabel.Size = new System.Drawing.Size(41, 12);
+            this.goldLabel.TabIndex = 0;
+            this.goldLabel.Text = "goldLabel";
             // 
             // TestWzq
             // 
@@ -36,16 +46,20 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Info;
             this.ClientSize = new System.Drawing.Size(641, 518);
+            this.Controls.Add(this.goldLabel);
             this.DoubleBuffered = true;
             this.Name = "TestWzq";
             this.Padding = new System.Windows.Forms.Padding(30);
             this.Text = "TestWzq";
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.TestWzq_MouseClick);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
+
+        private System.Windows.Forms.Label goldLabel;
 
 
 
