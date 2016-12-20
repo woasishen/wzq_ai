@@ -9,8 +9,8 @@ namespace wzq_ai
 {
     public partial class TestWzq : Form
     {
-        private const int CELL_W = 6;
-        private const int CELL_H = 6;
+        private const int CELL_W = 15;
+        private const int CELL_H = 15;
         private const float ITEM_SIZE_SCALE = 0.5f;
         private static readonly Dictionary<CellStatus, Brush> CellBrush =
             new Dictionary<CellStatus, Brush>
@@ -110,7 +110,11 @@ namespace wzq_ai
             cellArr[x][y] = isBlack ? CellStatus.Black : CellStatus.White;
             isBlack = !isBlack;
             Refresh();
-            var result = maxMin.GeneBestPos(cellArr, isBlack ? CellStatus.Black : CellStatus.White, 3);
+            var result = maxMin.GeneBestPos(cellArr, isBlack ? CellStatus.Black : CellStatus.White, 2);
+            var pos = result.PosStack.Peek();
+            cellArr[pos.X][pos.Y] = isBlack ? CellStatus.Black : CellStatus.White;
+            isBlack = !isBlack;
+            Refresh();
         }
     }
 }

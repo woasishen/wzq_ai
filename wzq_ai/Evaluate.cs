@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms.VisualStyles;
 
 namespace wzq_ai
 {
@@ -147,6 +148,8 @@ namespace wzq_ai
 
         public int ComputeGole(CellStatus[][] cellArr)
         {
+            MaxMin.evaluateTimes++;
+            Log.Info("evaluateTimes:" + MaxMin.evaluateTimes);
             var result = 0;
             foreach (var pos5Item in pos5)
             {
