@@ -19,7 +19,7 @@ namespace TestWzq
                 {CellStatus.White, new SolidBrush(Color.White)}
             };
 
-        private bool GameOver = false;
+        private bool gameOver;
         private float cellWStep;
         private float cellHStep;
         private readonly MaxMin maxMin;
@@ -36,7 +36,7 @@ namespace TestWzq
             for (var i = 0; i < cellArr.Length; i++)
             {
                 cellArr[i] = new CellStatus[CELL_H];
-                for (int j = 0; j < cellArr[i].Length; j++)
+                for (var j = 0; j < cellArr[i].Length; j++)
                 {
                     cellArr[i][j] = CellStatus.Empty;
                 }
@@ -67,11 +67,11 @@ namespace TestWzq
                 tableLayoutPanel.Visible = true;
                 winLabel.Text = curStatus == CellStatus.Black ? @"白方胜" : @"黑方胜";
                 winLabel.ForeColor = curStatus == CellStatus.Black ? Color.White : Color.Black;
-                GameOver = true;
+                gameOver = true;
                 return;
             }
 
-            for (int i = 0; i < CELL_W; i++)
+            for (var i = 0; i < CELL_W; i++)
             {
                 g.DrawLine(linePen,
                     i * cellWStep + Padding.Left,
@@ -79,7 +79,7 @@ namespace TestWzq
                     i * cellWStep + Padding.Left,
                     ClientSize.Height - Padding.Bottom);
             }
-            for (int i = 0; i < CELL_H; i++)
+            for (var i = 0; i < CELL_H; i++)
             {
                 g.DrawLine(linePen,
                     Padding.Left,
@@ -88,9 +88,9 @@ namespace TestWzq
                     i * cellHStep + Padding.Top);
             }
 
-            for (int i = 0; i < CELL_W; i++)
+            for (var i = 0; i < CELL_W; i++)
             {
-                for (int j = 0; j < CELL_H; j++)
+                for (var j = 0; j < CELL_H; j++)
                 {
                     if (cellArr[i][j] == CellStatus.Empty)
                     {
@@ -114,7 +114,7 @@ namespace TestWzq
 
         private void TestWzq_MouseClick(object sender, MouseEventArgs e)
         {
-            if (GameOver)
+            if (gameOver)
             {
                 return;
             }
@@ -136,7 +136,7 @@ namespace TestWzq
 
         private void computeBtn_Click(object sender, EventArgs e)
         {
-            if (GameOver)
+            if (gameOver)
             {
                 return;
             }
@@ -153,12 +153,12 @@ namespace TestWzq
         private void restarBtn_Click(object sender, EventArgs e)
         {
             tableLayoutPanel.Visible = false;
-            GameOver = false;
-            for (int i = 0; i < cellArr.Length; i++)
+            gameOver = false;
+            foreach (var cellLine in cellArr)
             {
-                for (int j = 0; j < cellArr[i].Length; j++)
+                for (var j = 0; j < cellLine.Length; j++)
                 {
-                    cellArr[i][j] = CellStatus.Empty;
+                    cellLine[j] = CellStatus.Empty;
                 }
             }
             UpdateGoleText();

@@ -33,9 +33,9 @@ namespace wzq_ai
             int depth)
         {
             var tempGoleList = new Dictionary<int, Stack<Pos>>();
-            for (int x = 0; x < curStatusArr.Length; x++)
+            for (var x = 0; x < curStatusArr.Length; x++)
             {
-                for (int y = 0; y < curStatusArr[x].Length; y++)
+                for (var y = 0; y < curStatusArr[x].Length; y++)
                 {
                     if (!ShouldCompute(x, y))
                     {
