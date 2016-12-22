@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms.VisualStyles;
 
 namespace wzq_ai
 {
@@ -148,8 +147,6 @@ namespace wzq_ai
 
         public int ComputeGole(CellStatus[][] cellArr)
         {
-            MaxMin.EvaluateTimes++;
-            Log.Info("evaluateTimes:" + MaxMin.EvaluateTimes);
             var result = 0;
             foreach (var pos5Item in pos5)
             {
@@ -168,6 +165,19 @@ namespace wzq_ai
                 }
             }
             return result;
+        }
+
+        public bool CheckIsWin(CellStatus[][] cellArr)
+        {
+            foreach (var pos5Item in pos5)
+            {
+                var tempItemKey = pos5Item.Aggregate(0, (current, t) => current * 10 + (int)cellArr[t.X][t.Y]);
+                if (tempItemKey == 22222 || tempItemKey == 33333)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private void AddDirectPos(

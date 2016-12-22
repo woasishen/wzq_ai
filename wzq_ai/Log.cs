@@ -9,16 +9,19 @@ namespace wzq_ai
             Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             "log.wzq");
 
-        private static StreamWriter sw;
+        private static readonly FileStream fs;
         static Log()
         {
-            var fs = File.Open(Desktop, FileMode.Create);
-            sw = new StreamWriter(fs);
+            fs = File.Open(Desktop, FileMode.Create);
+            
         }
 
         public static void Info(string msg)
         {
-            sw.WriteLine(msg);
+            using (var sw = new StreamWriter(fs))
+            {
+                sw.WriteLine(msg);
+            }
         }
     }
 }

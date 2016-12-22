@@ -5,26 +5,30 @@ namespace wzq_ai
 {
     public class MaxMin
     {
-        public static int EvaluateTimes;
         private readonly Evaluate evaluate;
-        public MaxMin(int width, int height)
+        private readonly CellStatus[][] curStatusArr;
+        public MaxMin(CellStatus[][] curStatusArr, int width, int height)
         {
+            this.curStatusArr = curStatusArr;
             evaluate = new Evaluate(width, height);
         }
 
-        public int ComputeCurGold(CellStatus[][] curStatusArr)
+        public int ComputeCurGold()
         {
             return evaluate.ComputeGole(curStatusArr);
         }
 
-        public GolePos GeneBestPos(CellStatus[][] curStatusArr, CellStatus curStatus, int depth)
+        public bool CheckIsWin()
         {
-            EvaluateTimes = 0;
-            return RecursionGeneBestPos(curStatusArr, curStatus, depth);
+            return evaluate.CheckIsWin(curStatusArr);
+        }
+
+        public GolePos GeneBestPos(CellStatus curStatus, int depth)
+        {
+            return RecursionGeneBestPos(curStatus, depth);
         }
 
         private GolePos RecursionGeneBestPos(
-            CellStatus[][] curStatusArr, 
             CellStatus curStatus,
             int depth)
         {
@@ -33,7 +37,7 @@ namespace wzq_ai
             {
                 for (int y = 0; y < curStatusArr[x].Length; y++)
                 {
-                    if (!ShouldCompute(curStatusArr, x, y))
+                    if (!ShouldCompute(x, y))
                     {
                         continue;
                     }
@@ -41,7 +45,6 @@ namespace wzq_ai
                     if (depth > 0)
                     {
                         var tempGoldPos = RecursionGeneBestPos(
-                            curStatusArr,
                             CellStatusHelper.Not(curStatus),
                             depth - 1);
                         tempGoldPos.PosStack.Push(new Pos(x, y));
@@ -63,7 +66,7 @@ namespace wzq_ai
             return new GolePos(gole, tempGoleList[gole]);
         }
 
-        private bool ShouldCompute(CellStatus[][] curStatusArr, int x, int y)
+        private bool ShouldCompute(int x, int y)
         {
             return curStatusArr[x][y] == CellStatus.Empty;
         }

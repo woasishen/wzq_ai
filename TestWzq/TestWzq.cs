@@ -18,6 +18,8 @@ namespace TestWzq
                 {CellStatus.Black, new SolidBrush(Color.Black)},
                 {CellStatus.White, new SolidBrush(Color.White)}
             };
+
+        private bool GameOver = false;
         private float cellWStep;
         private float cellHStep;
         private readonly MaxMin maxMin;
@@ -29,7 +31,7 @@ namespace TestWzq
         public TestWzq()
         {
             InitializeComponent();
-            maxMin = new MaxMin(CELL_W, CELL_H);
+            
             cellArr = new CellStatus[CELL_W][];
             for (var i = 0; i < cellArr.Length; i++)
             {
@@ -39,6 +41,7 @@ namespace TestWzq
                     cellArr[i][j] = CellStatus.Empty;
                 }
             }
+            maxMin = new MaxMin(cellArr, CELL_W, CELL_H);
             ReInitCellSize();
         }
 
@@ -58,6 +61,16 @@ namespace TestWzq
         private void DrawLines(Graphics g)
         {
             g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            if (maxMin.CheckIsWin())
+            {
+                tableLayoutPanel.Visible = true;
+                winLabel.Text = curStatus == CellStatus.Black ? @"白方胜" : @"黑方胜";
+                winLabel.ForeColor = curStatus == CellStatus.Black ? Color.White : Color.Black;
+                GameOver = true;
+                return;
+            }
+
             for (int i = 0; i < CELL_W; i++)
             {
                 g.DrawLine(linePen,
@@ -101,6 +114,10 @@ namespace TestWzq
 
         private void TestWzq_MouseClick(object sender, MouseEventArgs e)
         {
+            if (GameOver)
+            {
+                return;
+            }
             var x = (int)Math.Round((e.X - Padding.Left)/cellWStep);
             var y = (int) Math.Round((e.Y - Padding.Top)/cellHStep);
             if (x < 0 || y < 0 || x > CELL_W || y > CELL_H || cellArr[x][y] != CellStatus.Empty)
@@ -109,7 +126,7 @@ namespace TestWzq
             }
             cellArr[x][y] = curStatus;
             curStatus = CellStatusHelper.Not(curStatus);
-            goleLabel.Text = maxMin.ComputeCurGold(cellArr).ToString();
+            UpdateGoleText();
             Refresh();
             if (aotoComputeCheckBox.Checked)
             {
@@ -119,14 +136,38 @@ namespace TestWzq
 
         private void computeBtn_Click(object sender, EventArgs e)
         {
+            if (GameOver)
+            {
+                return;
+            }
             goleLabel.Text = @"计算中…";
             Refresh();
-            var result = maxMin.GeneBestPos(cellArr, curStatus, 1);
+            var result = maxMin.GeneBestPos(curStatus, 1);
             var pos = result.PosStack.Peek();
             cellArr[pos.X][pos.Y] = curStatus;
             curStatus = CellStatusHelper.Not(curStatus);
-            goleLabel.Text = maxMin.ComputeCurGold(cellArr).ToString();
+            UpdateGoleText();
             Refresh();
+        }
+
+        private void restarBtn_Click(object sender, EventArgs e)
+        {
+            tableLayoutPanel.Visible = false;
+            GameOver = false;
+            for (int i = 0; i < cellArr.Length; i++)
+            {
+                for (int j = 0; j < cellArr[i].Length; j++)
+                {
+                    cellArr[i][j] = CellStatus.Empty;
+                }
+            }
+            UpdateGoleText();
+            Refresh();
+        }
+
+        private void UpdateGoleText()
+        {
+            goleLabel.Text = maxMin.ComputeCurGold().ToString();
         }
     }
 }
