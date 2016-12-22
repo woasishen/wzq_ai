@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
-using TestWzq.Properties;
+using wzq_ai;
 
-namespace wzq_ai
+namespace TestWzq
 {
     public partial class TestWzq : Form
     {
@@ -24,12 +24,12 @@ namespace wzq_ai
         private readonly CellStatus[][] cellArr;
         private readonly Pen linePen = new Pen(Color.Black, 1);
         private float itemDiameter;
-        private bool isBlack = true;
+        private CellStatus curStatus = CellStatus.Black;
         
         public TestWzq()
         {
             InitializeComponent();
-            maxMin = new MaxMin(3, CELL_W, CELL_H);
+            maxMin = new MaxMin(CELL_W, CELL_H);
             cellArr = new CellStatus[CELL_W][];
             for (var i = 0; i < cellArr.Length; i++)
             {
@@ -107,13 +107,25 @@ namespace wzq_ai
             {
                 return;
             }
-            cellArr[x][y] = isBlack ? CellStatus.Black : CellStatus.White;
-            isBlack = !isBlack;
+            cellArr[x][y] = curStatus;
+            curStatus = CellStatusHelper.Not(curStatus);
+            goleLabel.Text = maxMin.ComputeCurGold(cellArr).ToString();
             Refresh();
-            var result = maxMin.GeneBestPos(cellArr, isBlack ? CellStatus.Black : CellStatus.White, 2);
+            if (aotoComputeCheckBox.Checked)
+            {
+                computeBtn_Click(null, null);
+            }
+        }
+
+        private void computeBtn_Click(object sender, EventArgs e)
+        {
+            goleLabel.Text = @"计算中…";
+            Refresh();
+            var result = maxMin.GeneBestPos(cellArr, curStatus, 1);
             var pos = result.PosStack.Peek();
-            cellArr[pos.X][pos.Y] = isBlack ? CellStatus.Black : CellStatus.White;
-            isBlack = !isBlack;
+            cellArr[pos.X][pos.Y] = curStatus;
+            curStatus = CellStatusHelper.Not(curStatus);
+            goleLabel.Text = maxMin.ComputeCurGold(cellArr).ToString();
             Refresh();
         }
     }

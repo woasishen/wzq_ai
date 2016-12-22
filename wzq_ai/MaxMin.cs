@@ -5,22 +5,21 @@ namespace wzq_ai
 {
     public class MaxMin
     {
-        public static int evaluateTimes = 0;
-        private readonly int defaultDepth;
+        public static int EvaluateTimes;
         private readonly Evaluate evaluate;
-        public MaxMin(int defaultDepth, int width, int height)
+        public MaxMin(int width, int height)
         {
-            this.defaultDepth = defaultDepth;
             evaluate = new Evaluate(width, height);
         }
 
-        public GolePos GeneBestPos(CellStatus[][] curStatusArr, CellStatus curStatus, int depth = 0)
+        public int ComputeCurGold(CellStatus[][] curStatusArr)
         {
-            evaluateTimes = 0;
-            if (depth == 0)
-            {
-                depth = defaultDepth;
-            }
+            return evaluate.ComputeGole(curStatusArr);
+        }
+
+        public GolePos GeneBestPos(CellStatus[][] curStatusArr, CellStatus curStatus, int depth)
+        {
+            EvaluateTimes = 0;
             return RecursionGeneBestPos(curStatusArr, curStatus, depth);
         }
 

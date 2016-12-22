@@ -1,4 +1,4 @@
-﻿namespace wzq_ai
+﻿namespace TestWzq
 {
     partial class TestWzq
     {
@@ -28,25 +28,50 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.goldLabel = new System.Windows.Forms.Label();
+            this.goleLabel = new System.Windows.Forms.Label();
+            this.computeBtn = new System.Windows.Forms.Button();
+            this.aotoComputeCheckBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
-            // goldLabel
+            // goleLabel
             // 
-            this.goldLabel.AutoSize = true;
-            this.goldLabel.Location = new System.Drawing.Point(265, 2);
-            this.goldLabel.Name = "goldLabel";
-            this.goldLabel.Size = new System.Drawing.Size(41, 12);
-            this.goldLabel.TabIndex = 0;
-            this.goldLabel.Text = "goldLabel";
+            this.goleLabel.AutoSize = true;
+            this.goleLabel.Location = new System.Drawing.Point(265, 2);
+            this.goleLabel.Name = "goleLabel";
+            this.goleLabel.Size = new System.Drawing.Size(59, 12);
+            this.goleLabel.TabIndex = 0;
+            this.goleLabel.Text = "goleLabel";
+            // 
+            // computeBtn
+            // 
+            this.computeBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.computeBtn.Location = new System.Drawing.Point(197, 493);
+            this.computeBtn.Name = "computeBtn";
+            this.computeBtn.Size = new System.Drawing.Size(75, 23);
+            this.computeBtn.TabIndex = 1;
+            this.computeBtn.Text = "计算";
+            this.computeBtn.UseVisualStyleBackColor = true;
+            this.computeBtn.Click += new System.EventHandler(this.computeBtn_Click);
+            // 
+            // aotoComputeCheckBox
+            // 
+            this.aotoComputeCheckBox.AutoSize = true;
+            this.aotoComputeCheckBox.Location = new System.Drawing.Point(316, 497);
+            this.aotoComputeCheckBox.Name = "aotoComputeCheckBox";
+            this.aotoComputeCheckBox.Size = new System.Drawing.Size(96, 16);
+            this.aotoComputeCheckBox.TabIndex = 2;
+            this.aotoComputeCheckBox.Text = "自动人机对战";
+            this.aotoComputeCheckBox.UseVisualStyleBackColor = true;
             // 
             // TestWzq
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.Info;
+            this.BackColor = System.Drawing.Color.SandyBrown;
             this.ClientSize = new System.Drawing.Size(641, 518);
-            this.Controls.Add(this.goldLabel);
+            this.Controls.Add(this.aotoComputeCheckBox);
+            this.Controls.Add(this.computeBtn);
+            this.Controls.Add(this.goleLabel);
             this.DoubleBuffered = true;
             this.Name = "TestWzq";
             this.Padding = new System.Windows.Forms.Padding(30);
@@ -59,7 +84,9 @@
 
         #endregion
 
-        private System.Windows.Forms.Label goldLabel;
+        private System.Windows.Forms.Label goleLabel;
+        private System.Windows.Forms.Button computeBtn;
+        private System.Windows.Forms.CheckBox aotoComputeCheckBox;
 
 
 

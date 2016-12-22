@@ -148,8 +148,8 @@ namespace wzq_ai
 
         public int ComputeGole(CellStatus[][] cellArr)
         {
-            MaxMin.evaluateTimes++;
-            Log.Info("evaluateTimes:" + MaxMin.evaluateTimes);
+            MaxMin.EvaluateTimes++;
+            Log.Info("evaluateTimes:" + MaxMin.EvaluateTimes);
             var result = 0;
             foreach (var pos5Item in pos5)
             {

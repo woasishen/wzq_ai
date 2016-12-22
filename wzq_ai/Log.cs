@@ -1,18 +1,18 @@
 ﻿using System;
 using System.IO;
 
-namespace TestWzq
+namespace wzq_ai
 {
     public static class Log
     {
-        private static readonly string DESKTOP = Path.Combine(
+        private static readonly string Desktop = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             "log.wzq");
 
         private static StreamWriter sw;
         static Log()
         {
-            var fs = File.Open(DESKTOP, FileMode.Create);
+            var fs = File.Open(Desktop, FileMode.Create);
             sw = new StreamWriter(fs);
         }
 
