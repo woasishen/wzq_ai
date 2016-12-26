@@ -27,11 +27,10 @@ namespace TestWzq
         private readonly Pen linePen = new Pen(Color.Black, 1);
         private float itemDiameter;
         private CellStatus curStatus = CellStatus.Black;
-        
+
         public TestWzq()
         {
             InitializeComponent();
-            
             cellArr = new CellStatus[CELL_W][];
             for (var i = 0; i < cellArr.Length; i++)
             {
@@ -62,7 +61,7 @@ namespace TestWzq
         {
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
-            if (maxMin.CheckIsWin())
+            if (true)
             {
                 tableLayoutPanel.Visible = true;
                 winLabel.Text = curStatus == CellStatus.Black ? @"白方胜" : @"黑方胜";
@@ -167,7 +166,7 @@ namespace TestWzq
 
         private void UpdateGoleText()
         {
-            goleLabel.Text = maxMin.ComputeCurGold().ToString();
+
         }
     }
 }

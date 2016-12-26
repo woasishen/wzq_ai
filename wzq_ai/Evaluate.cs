@@ -30,7 +30,7 @@ namespace wzq_ai
         }
     }
 
-    public class Pos
+    public struct Pos
     {
         public int X { get; }
         public int Y { get; }
@@ -61,68 +61,134 @@ namespace wzq_ai
 
     public class Evaluate
     {
-        private readonly List<Pos[]> posLineArr = new List<Pos[]>(); //所有可能的5连格
+        public static readonly Dictionary<int, int> GOLE_DICT = new Dictionary<int, int>
+        {
+            {1,1 },
+            {2,100 },
+            {3,10000 },
+            {4,1000000 },
+            {5,-1 }
+        };
 
-        public Evaluate(int width, int height)
+        private readonly CellStatus[][] cellStatusArr;
+
+        private readonly List<Pos[]> posLineArr = new List<Pos[]>(); //所有可能的5连格
+        private readonly Dictionary<Pos, List<Pos[]>> posContainersDict = new Dictionary<Pos, List<Pos[]>>();//包含特定位置的所有5连格
+
+        public Evaluate(CellStatus[][] curStatusArr, int width, int height)
         {
             if (width < 6 || height < 6)
             {
-                throw new Exception("棋盘太小");
+                throw new ArgumentException("棋盘太小");
             }
 
+            cellStatusArr = curStatusArr;
+
             //横的5连
-            AddDirectPos(height, width, 5, posLineArr, (y, x) => new Pos(x, y));
+            AddDirectPos(height, width, 5, (y, x) => new Pos(x, y));
 
             //竖的5连
-            AddDirectPos(width, height, 5, posLineArr, (x, y) => new Pos(x, y));
+            AddDirectPos(width, height, 5, (x, y) => new Pos(x, y));
 
             //正对角的5连
-            AddDiagonalPos(width, height, 5, posLineArr, (x, y) => new Pos(x, y));
+            AddDiagonalPos(width, height, 5, (x, y) => new Pos(x, y));
 
             //反对角的5连
-            AddDiagonalPos(width, height, 5, posLineArr, (x, y) => new Pos(width - x - 1, y));
+            AddDiagonalPos(width, height, 5, (x, y) => new Pos(width - x - 1, y));
+
+            foreach (var posLine in posLineArr)
+            {
+                foreach (var pos in posLine)
+                {
+                    if (!posContainersDict.ContainsKey(pos))
+                    {
+                        posContainersDict[pos] = new List<Pos[]>();
+                    }
+                    posContainersDict[pos].Add(posLine);
+                }
+            }
         }
 
-        public int ComputeGole(CellStatus[][] cellArr, CellStatus cellStatus)
+        public int ComputeGole(CellStatus cellStatus)
         {
             var gole = 0;
-            foreach (var result in posLineArr.Select(posLine => posLine.Sum(pos => (int)cellArr[pos.X][pos.Y])))
+            foreach (var posLine in posLineArr)
             {
-                switch (cellStatus)
+                var tempGole = GeneGole(cellStatus, posLine);
+                if (tempGole == -1)
                 {
-                    case CellStatus.Black:
-                        //含有白子
-                        if (result > 10)
-                        {
-                            continue;
-                        }
-                        gole += 2 << result;
-                        break;
-                    case CellStatus.White:
-                        //含有黑子
-                        if (result % 10 > 0)
-                        {
-                            continue;
-                        }
-                        gole += 2 << (result / 10);
-                        break;
-                    case CellStatus.Empty:
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(cellStatus), cellStatus, null);
+                    return -1;
                 }
+                gole += tempGole;
             }
             return gole;
         }
 
-        public bool CheckIsWin(CellStatus[][] cellArr)
+        public int ComputePosGoleForSelf(CellStatus cellStatus, Pos pos)
         {
-            return posLineArr.Select(
-                pos5Item => pos5Item.Sum(pos => (int) cellArr[pos.X][pos.Y]))
-                .Any(tempItemKey => tempItemKey == 5 || tempItemKey == 50);
+            if (cellStatus == CellStatus.Empty || cellStatusArr[pos.X][pos.Y] != CellStatus.Empty)
+            {
+                throw new ArgumentException("ComputePosGoleForSelf");
+            }
+            var gole = 0;
+            cellStatusArr[pos.X][pos.Y] = cellStatus;
+            foreach (var posLine in posContainersDict[pos])
+            {
+                var tempGole = GeneGole(cellStatus, posLine);
+                if (tempGole == -1)
+                {
+                    return -1;
+                }
+                gole += tempGole;
+            }
+            cellStatusArr[pos.X][pos.Y] = CellStatus.Empty;
+            return gole;
         }
 
-        private void AddDirectPos(int width, int height, int length, List<Pos[]> posArr, Func<int, int, Pos> genPos)
+        public int ComputePosGoleForOther(CellStatus cellStatus, Pos pos)
+        {
+            if (cellStatus == CellStatus.Empty || cellStatusArr[pos.X][pos.Y] != CellStatus.Empty)
+            {
+                throw new Exception("ComputePosGoleForSelf");
+            }
+            var gole = 0;
+            foreach (var posLine in posContainersDict[pos])
+            {
+                var tempGole = GeneGole(CellStatusHelper.Not(cellStatus), posLine);
+                if (tempGole == -1)
+                {
+                    throw new Exception("内部错误");
+                }
+                gole += tempGole;
+            }
+            return gole;
+        }
+
+        private int GeneGole(CellStatus cellStatus, Pos[] posLine)
+        {
+            var result = posLine.Sum(p => (int) cellStatusArr[p.X][p.Y]);
+            switch (cellStatus)
+            {
+                case CellStatus.Black:
+                    //含有白子
+                    if (result > 10)
+                    {
+                        return 0;
+                    }
+                    return GOLE_DICT[result];
+                case CellStatus.White:
+                    //含有黑子
+                    if (result % 10 > 0)
+                    {
+                        return 0;
+                    }
+                    return GOLE_DICT[result / 10];
+                    
+            }
+            throw new ArgumentOutOfRangeException(nameof(cellStatus), cellStatus, null);
+        }
+
+        private void AddDirectPos(int width, int height, int length, Func<int, int, Pos> genPos)
         {
             for (var i = 0; i < width; i++)
             {
@@ -133,21 +199,21 @@ namespace wzq_ai
                     {
                         tempPos[k] = genPos(i, j + k);
                     }
-                    posArr.Add(tempPos);
+                    posLineArr.Add(tempPos);
                 }
             }
         }
 
-        private void AddDiagonalPos(int width, int height, int length, List<Pos[]> posArr, Func<int, int, Pos> genPos)
+        private void AddDiagonalPos(int width, int height, int length, Func<int, int, Pos> genPos)
         {
-            AddDiagonalPosOneLine(0, 0, width, height, length, posArr, genPos);
+            AddDiagonalPosOneLine(0, 0, width, height, length, posLineArr, genPos);
             for (var i = 1; i < width; i++)
             {
-                AddDiagonalPosOneLine(i, 0, width, height, length, posArr, genPos);
+                AddDiagonalPosOneLine(i, 0, width, height, length, posLineArr, genPos);
             }
             for (var i = 1; i < height; i++)
             {
-                AddDiagonalPosOneLine(0, i, width, height, length, posArr, genPos);
+                AddDiagonalPosOneLine(0, i, width, height, length, posLineArr, genPos);
             }
         }
 
