@@ -63,11 +63,12 @@ namespace wzq_ai
     {
         public static readonly Dictionary<int, int> GOLE_DICT = new Dictionary<int, int>
         {
+            {0,0 },
             {1,1 },
             {2,100 },
             {3,10000 },
             {4,1000000 },
-            {5,-1 }
+            {5,100000000 }
         };
 
         private readonly CellStatus[][] cellStatusArr;
@@ -109,17 +110,54 @@ namespace wzq_ai
             }
         }
 
-        public int ComputeGole(CellStatus cellStatus)
+        public int ComputeTotalGole(CellStatus cellStatus)
+        {
+            var selfGole = ComputeGole(cellStatus);
+            if (selfGole >= GOLE_DICT[4])
+            {
+                return GOLE_DICT[5];
+            }
+            var otherGole = ComputeGole(CellStatusHelper.Not(cellStatus));
+            if (otherGole >= GOLE_DICT[4] * 2)
+            {
+                return -GOLE_DICT[5];
+            }
+            //因为将要轮到对方走，对方分数做增益
+            otherGole *= 2;
+
+            if (cellStatus == CellStatus.Black)
+            {
+                return selfGole - otherGole;
+            }
+            return otherGole - selfGole;
+        }
+
+        private int ComputeGole(CellStatus cellStatus)
         {
             var gole = 0;
             foreach (var posLine in posLineArr)
             {
                 var tempGole = GeneGole(cellStatus, posLine);
-                if (tempGole == -1)
+                if (tempGole == GOLE_DICT[5])
                 {
-                    return -1;
+                    return GOLE_DICT[5];
                 }
-                gole += tempGole;
+                if (tempGole == GOLE_DICT[4])
+                {
+                    gole += tempGole;
+                }
+                if (tempGole == GOLE_DICT[3])
+                {
+                    gole += tempGole;
+                }
+                if (tempGole == GOLE_DICT[2])
+                {
+                    gole += tempGole;
+                }
+                if (tempGole == GOLE_DICT[1])
+                {
+                    gole += tempGole;
+                }
             }
             return gole;
         }
@@ -135,9 +173,9 @@ namespace wzq_ai
             foreach (var posLine in posContainersDict[pos])
             {
                 var tempGole = GeneGole(cellStatus, posLine);
-                if (tempGole == -1)
+                if (tempGole == GOLE_DICT[5])
                 {
-                    return -1;
+                    return GOLE_DICT[5];
                 }
                 gole += tempGole;
             }
@@ -155,7 +193,7 @@ namespace wzq_ai
             foreach (var posLine in posContainersDict[pos])
             {
                 var tempGole = GeneGole(CellStatusHelper.Not(cellStatus), posLine);
-                if (tempGole == -1)
+                if (tempGole == GOLE_DICT[5])
                 {
                     throw new Exception("内部错误");
                 }
@@ -171,19 +209,10 @@ namespace wzq_ai
             {
                 case CellStatus.Black:
                     //含有白子
-                    if (result > 10)
-                    {
-                        return 0;
-                    }
-                    return GOLE_DICT[result];
+                    return result >= 10 ? 0 : GOLE_DICT[result];
                 case CellStatus.White:
                     //含有黑子
-                    if (result % 10 > 0)
-                    {
-                        return 0;
-                    }
-                    return GOLE_DICT[result / 10];
-                    
+                    return result % 10 >= 1 ? 0 : GOLE_DICT[result / 10];
             }
             throw new ArgumentOutOfRangeException(nameof(cellStatus), cellStatus, null);
         }

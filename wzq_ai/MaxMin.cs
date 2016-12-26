@@ -8,6 +8,11 @@ namespace wzq_ai
     {
         private readonly Evaluate evaluate;
         private readonly CellStatus[][] cellStatusArr;
+
+        public Evaluate Evaluate
+        {
+            get { return evaluate; }
+        }
         public MaxMin(CellStatus[][] curStatusArr, int width, int height)
         {
             cellStatusArr = curStatusArr;
@@ -22,62 +27,29 @@ namespace wzq_ai
         /// <returns></returns>
         public GolePos GeneBestPos(CellStatus curStatus, int depth)
         {
-            var curGole = evaluate.ComputeGole(curStatus);
-            if (curGole == -1)
+            var tempGoleList = new Dictionary<int, Stack<Pos>>();
+            for (int x = 0; x < cellStatusArr.Length; x++)
             {
-                throw new Exception("已经取得胜利");
-            }
-            if (curGole >= Evaluate.GOLE_DICT[4])
-            {
-                for (int i = 0; i < cellStatusArr.Length; i++)
+                for (int y = 0; y < cellStatusArr[x].Length; y++)
                 {
-                    for (int j = 0; j < cellStatusArr[i].Length; j++)
+                    if (!ShouldCompute(x, y))
                     {
-                        var pos = new Pos(i, j);
-                        var gole = evaluate.ComputePosGoleForSelf(curStatus, pos);
-                        if (gole > Evaluate.GOLE_DICT[5])
-                        {
-                            var tempStack = new Stack<Pos>();
-                            tempStack.Push(pos);
-                            return new GolePos(-1, tempStack);
-                        }
+                        continue;
                     }
+                    cellStatusArr[x][y] = curStatus;
+
+                    var tempStack = new Stack<Pos>();
+                    tempStack.Push(new Pos(x, y));
+                    tempGoleList[evaluate.ComputeTotalGole(curStatus)] = tempStack;
+
+                    cellStatusArr[x][y] = CellStatus.Empty;
                 }
             }
-            var otherGole = evaluate.ComputeGole(CellStatusHelper.Not(curStatus));
+            var gole = curStatus == CellStatus.Black
+                ? tempGoleList.Keys.Max()
+                : tempGoleList.Keys.Min();
 
-            //var tempGoleList = new Dictionary<int, Stack<Pos>>();
-            //for (var x = 0; x < cellStatusArr.Length; x++)
-            //{
-            //    for (var y = 0; y < cellStatusArr[x].Length; y++)
-            //    {
-            //        if (!ShouldCompute(x, y))
-            //        {
-            //            continue;
-            //        }
-            //        cellStatusArr[x][y] = curStatus;
-            //        if (depth > 0)
-            //        {
-            //            var tempGoldPos = RecursionGeneBestPos(
-            //                CellStatusHelper.Not(curStatus),
-            //                depth - 1);
-            //            tempGoldPos.PosStack.Push(new Pos(x, y));
-            //            tempGoleList[tempGoldPos.Gole] = tempGoldPos.PosStack;
-            //        }
-            //        else
-            //        {
-            //            var tempStack = new Stack<Pos>();
-            //            tempStack.Push(new Pos(x, y));
-            //            tempGoleList[evaluate.ComputeGole(cellStatusArr)] = tempStack;
-            //        }
-            //        cellStatusArr[x][y] = CellStatus.Empty;
-            //    }
-            //}
-            //var gole = curStatus == CellStatus.Black
-            //    ? tempGoleList.Keys.Max()
-            //    : tempGoleList.Keys.Min();
-
-            //return new GolePos(gole, tempGoleList[gole]);
+            return new GolePos(gole, tempGoleList[gole]);
         }
 
         private bool ShouldCompute(int x, int y)
