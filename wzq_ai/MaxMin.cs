@@ -37,6 +37,18 @@ namespace wzq_ai
                         continue;
                     }
                     cellStatusArr[x][y] = curStatus;
+                    if (x == 9 && y == 2)
+                    {
+                        int a = 1;
+                    }
+                    if (x == 8 && y == 2)
+                    {
+                        int a = 2;
+                    }
+                    if (x == 3 && y == 7)
+                    {
+                        int a = 3;
+                    }
 
                     var tempStack = new Stack<Pos>();
                     tempStack.Push(new Pos(x, y));

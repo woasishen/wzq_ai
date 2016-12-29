@@ -112,27 +112,25 @@ namespace wzq_ai
 
         public int ComputeTotalGole(CellStatus cellStatus)
         {
-            var selfGole = ComputeGole(cellStatus);
-            if (selfGole >= GOLE_DICT[4])
-            {
-                return GOLE_DICT[5];
-            }
             var otherGole = ComputeGole(CellStatusHelper.Not(cellStatus));
-            if (otherGole >= GOLE_DICT[4] * 2)
+            if (otherGole >= GOLE_DICT[4])
             {
                 return -GOLE_DICT[5];
             }
+
+            var selfGole = ComputeGole(cellStatus);
+            if (selfGole >= GOLE_DICT[4] * 2)
+            {
+                return GOLE_DICT[5];
+            }
+
             //因为将要轮到对方走，对方分数做增益
             otherGole *= 2;
 
-            if (cellStatus == CellStatus.Black)
-            {
-                return selfGole - otherGole;
-            }
-            return otherGole - selfGole;
+            return selfGole - otherGole;
         }
 
-        private int ComputeGole(CellStatus cellStatus)
+        public int ComputeGole(CellStatus cellStatus)
         {
             var gole = 0;
             foreach (var posLine in posLineArr)
@@ -164,12 +162,11 @@ namespace wzq_ai
 
         public int ComputePosGoleForSelf(CellStatus cellStatus, Pos pos)
         {
-            if (cellStatus == CellStatus.Empty || cellStatusArr[pos.X][pos.Y] != CellStatus.Empty)
+            if (cellStatus == CellStatus.Empty || cellStatusArr[pos.X][pos.Y] != cellStatus)
             {
                 throw new ArgumentException("ComputePosGoleForSelf");
             }
             var gole = 0;
-            cellStatusArr[pos.X][pos.Y] = cellStatus;
             foreach (var posLine in posContainersDict[pos])
             {
                 var tempGole = GeneGole(cellStatus, posLine);
@@ -178,17 +175,21 @@ namespace wzq_ai
                     return GOLE_DICT[5];
                 }
                 gole += tempGole;
+
+                cellStatusArr[pos.X][pos.Y] = CellStatus.Empty;
+                gole -= GeneGole(cellStatus, posLine);
+                cellStatusArr[pos.X][pos.Y] = cellStatus;
             }
-            cellStatusArr[pos.X][pos.Y] = CellStatus.Empty;
             return gole;
         }
 
         public int ComputePosGoleForOther(CellStatus cellStatus, Pos pos)
         {
-            if (cellStatus == CellStatus.Empty || cellStatusArr[pos.X][pos.Y] != CellStatus.Empty)
+            if (cellStatus == CellStatus.Empty || cellStatusArr[pos.X][pos.Y] != cellStatus)
             {
                 throw new Exception("ComputePosGoleForSelf");
             }
+            cellStatusArr[pos.X][pos.Y] = CellStatus.Empty;
             var gole = 0;
             foreach (var posLine in posContainersDict[pos])
             {
@@ -199,6 +200,7 @@ namespace wzq_ai
                 }
                 gole += tempGole;
             }
+            cellStatusArr[pos.X][pos.Y] = cellStatus;
             return gole;
         }
 

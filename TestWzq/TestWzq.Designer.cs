@@ -30,19 +30,21 @@
         {
             this.computeBtn = new System.Windows.Forms.Button();
             this.aotoComputeCheckBox = new System.Windows.Forms.CheckBox();
-            this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.winLabel = new System.Windows.Forms.Label();
             this.restarBtn = new System.Windows.Forms.Button();
             this.redo = new System.Windows.Forms.Button();
-            this.goleLabel = new System.Windows.Forms.Label();
-            this.tableLayoutPanel.SuspendLayout();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.whiteGoleLabel = new System.Windows.Forms.Label();
+            this.balckGoleLabel = new System.Windows.Forms.Label();
+            this.bottomPanel = new System.Windows.Forms.Panel();
+            this.mainControl1 = new TestWzq.MainControl();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.bottomPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // computeBtn
             // 
             this.computeBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.computeBtn.Location = new System.Drawing.Point(196, 501);
+            this.computeBtn.Location = new System.Drawing.Point(11, 6);
             this.computeBtn.Name = "computeBtn";
             this.computeBtn.Size = new System.Drawing.Size(75, 23);
             this.computeBtn.TabIndex = 1;
@@ -52,58 +54,20 @@
             // 
             // aotoComputeCheckBox
             // 
-            this.aotoComputeCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.aotoComputeCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.aotoComputeCheckBox.AutoSize = true;
-            this.aotoComputeCheckBox.Location = new System.Drawing.Point(306, 505);
+            this.aotoComputeCheckBox.Location = new System.Drawing.Point(141, 9);
             this.aotoComputeCheckBox.Name = "aotoComputeCheckBox";
             this.aotoComputeCheckBox.Size = new System.Drawing.Size(96, 16);
             this.aotoComputeCheckBox.TabIndex = 2;
             this.aotoComputeCheckBox.Text = "自动人机对战";
             this.aotoComputeCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // tableLayoutPanel
-            // 
-            this.tableLayoutPanel.ColumnCount = 1;
-            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel.Controls.Add(this.label1, 0, 0);
-            this.tableLayoutPanel.Controls.Add(this.winLabel, 0, 1);
-            this.tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel.Location = new System.Drawing.Point(30, 40);
-            this.tableLayoutPanel.Name = "tableLayoutPanel";
-            this.tableLayoutPanel.RowCount = 2;
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel.Size = new System.Drawing.Size(579, 439);
-            this.tableLayoutPanel.TabIndex = 3;
-            this.tableLayoutPanel.Visible = false;
-            // 
-            // label1
-            // 
-            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label1.Font = new System.Drawing.Font("宋体", 42F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label1.ForeColor = System.Drawing.Color.LawnGreen;
-            this.label1.Location = new System.Drawing.Point(3, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(573, 219);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "五子连珠";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-            // 
-            // winLabel
-            // 
-            this.winLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.winLabel.Font = new System.Drawing.Font("宋体", 42F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.winLabel.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.winLabel.Location = new System.Drawing.Point(3, 219);
-            this.winLabel.Name = "winLabel";
-            this.winLabel.Size = new System.Drawing.Size(573, 220);
-            this.winLabel.TabIndex = 1;
-            this.winLabel.Text = "黑方胜";
-            this.winLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.aotoComputeCheckBox.CheckedChanged += new System.EventHandler(this.aotoComputeCheckBox_CheckedChanged);
             // 
             // restarBtn
             // 
-            this.restarBtn.Location = new System.Drawing.Point(549, 501);
+            this.restarBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.restarBtn.Location = new System.Drawing.Point(548, 6);
             this.restarBtn.Name = "restarBtn";
             this.restarBtn.Size = new System.Drawing.Size(75, 23);
             this.restarBtn.TabIndex = 4;
@@ -113,7 +77,8 @@
             // 
             // redo
             // 
-            this.redo.Location = new System.Drawing.Point(468, 501);
+            this.redo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.redo.Location = new System.Drawing.Point(467, 6);
             this.redo.Name = "redo";
             this.redo.Size = new System.Drawing.Size(75, 23);
             this.redo.TabIndex = 5;
@@ -121,16 +86,64 @@
             this.redo.UseVisualStyleBackColor = true;
             this.redo.Click += new System.EventHandler(this.redo_Click);
             // 
-            // goleLabel
+            // tableLayoutPanel1
             // 
-            this.goleLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.goleLabel.Location = new System.Drawing.Point(27, 1);
-            this.goleLabel.Name = "goleLabel";
-            this.goleLabel.Size = new System.Drawing.Size(579, 17);
-            this.goleLabel.TabIndex = 6;
-            this.goleLabel.Text = "走起……";
-            this.goleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.whiteGoleLabel, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.balckGoleLabel, 0, 0);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(639, 34);
+            this.tableLayoutPanel1.TabIndex = 6;
+            // 
+            // whiteGoleLabel
+            // 
+            this.whiteGoleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.whiteGoleLabel.Location = new System.Drawing.Point(322, 0);
+            this.whiteGoleLabel.Name = "whiteGoleLabel";
+            this.whiteGoleLabel.Size = new System.Drawing.Size(314, 34);
+            this.whiteGoleLabel.TabIndex = 1;
+            this.whiteGoleLabel.Text = "label2";
+            this.whiteGoleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // balckGoleLabel
+            // 
+            this.balckGoleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.balckGoleLabel.Location = new System.Drawing.Point(3, 0);
+            this.balckGoleLabel.Name = "balckGoleLabel";
+            this.balckGoleLabel.Size = new System.Drawing.Size(313, 34);
+            this.balckGoleLabel.TabIndex = 0;
+            this.balckGoleLabel.Text = "label1";
+            this.balckGoleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // bottomPanel
+            // 
+            this.bottomPanel.Controls.Add(this.redo);
+            this.bottomPanel.Controls.Add(this.computeBtn);
+            this.bottomPanel.Controls.Add(this.aotoComputeCheckBox);
+            this.bottomPanel.Controls.Add(this.restarBtn);
+            this.bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.bottomPanel.Location = new System.Drawing.Point(0, 507);
+            this.bottomPanel.Name = "bottomPanel";
+            this.bottomPanel.Size = new System.Drawing.Size(639, 32);
+            this.bottomPanel.TabIndex = 8;
+            // 
+            // mainControl1
+            // 
+            this.mainControl1.AutoCompute = false;
+            this.mainControl1.BackColor = System.Drawing.Color.Peru;
+            this.mainControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mainControl1.Location = new System.Drawing.Point(0, 34);
+            this.mainControl1.Name = "mainControl1";
+            this.mainControl1.Padding = new System.Windows.Forms.Padding(30);
+            this.mainControl1.Size = new System.Drawing.Size(639, 473);
+            this.mainControl1.StepStatusChanged = null;
+            this.mainControl1.TabIndex = 9;
             // 
             // TestWzq
             // 
@@ -138,31 +151,28 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SandyBrown;
             this.ClientSize = new System.Drawing.Size(639, 539);
-            this.Controls.Add(this.goleLabel);
-            this.Controls.Add(this.redo);
-            this.Controls.Add(this.restarBtn);
-            this.Controls.Add(this.tableLayoutPanel);
-            this.Controls.Add(this.aotoComputeCheckBox);
-            this.Controls.Add(this.computeBtn);
+            this.Controls.Add(this.mainControl1);
+            this.Controls.Add(this.bottomPanel);
+            this.Controls.Add(this.tableLayoutPanel1);
             this.DoubleBuffered = true;
             this.Name = "TestWzq";
-            this.Padding = new System.Windows.Forms.Padding(30, 40, 30, 60);
             this.Text = "TestWzq";
-            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.TestWzq_MouseClick);
-            this.tableLayoutPanel.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.bottomPanel.ResumeLayout(false);
+            this.bottomPanel.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
         private System.Windows.Forms.Button computeBtn;
         private System.Windows.Forms.CheckBox aotoComputeCheckBox;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label winLabel;
         private System.Windows.Forms.Button restarBtn;
         private System.Windows.Forms.Button redo;
-        private System.Windows.Forms.Label goleLabel;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.Label whiteGoleLabel;
+        private System.Windows.Forms.Label balckGoleLabel;
+        private System.Windows.Forms.Panel bottomPanel;
+        private TestWzq.MainControl mainControl1;
     }
 }
