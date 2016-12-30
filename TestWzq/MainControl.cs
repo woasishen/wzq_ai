@@ -43,6 +43,8 @@ namespace TestWzq
         private const float NUM_W = 20;
         private const float NUM_H = 20;
 
+        public MaxMin MaxMin => maxMin;
+
         public bool AutoCompute { get; set; }
 
         public Action StepStatusChanged { set; get; }
@@ -82,7 +84,7 @@ namespace TestWzq
             Refresh();
         }
 
-        public void RestartGame(object sender, EventArgs e)
+        public void RestartGame()
         {
             tableLayoutPanel.Visible = false;
             foreach (var cellLine in cellArr)

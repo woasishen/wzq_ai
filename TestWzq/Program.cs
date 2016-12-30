@@ -16,7 +16,7 @@ namespace TestWzq
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new TestWzq());
+            Application.Run(new MainForm());
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace TestWzq
 {
-    partial class TestWzq
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -29,14 +29,14 @@
         private void InitializeComponent()
         {
             this.computeBtn = new System.Windows.Forms.Button();
-            this.aotoComputeCheckBox = new System.Windows.Forms.CheckBox();
+            this.autoComputeCheckBox = new System.Windows.Forms.CheckBox();
             this.restarBtn = new System.Windows.Forms.Button();
             this.redo = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.whiteGoleLabel = new System.Windows.Forms.Label();
             this.balckGoleLabel = new System.Windows.Forms.Label();
             this.bottomPanel = new System.Windows.Forms.Panel();
-            this.mainControl1 = new TestWzq.MainControl();
+            this.mainControl = new TestWzq.MainControl();
             this.tableLayoutPanel1.SuspendLayout();
             this.bottomPanel.SuspendLayout();
             this.SuspendLayout();
@@ -52,17 +52,17 @@
             this.computeBtn.UseVisualStyleBackColor = true;
             this.computeBtn.Click += new System.EventHandler(this.computeBtn_Click);
             // 
-            // aotoComputeCheckBox
+            // autoComputeCheckBox
             // 
-            this.aotoComputeCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.aotoComputeCheckBox.AutoSize = true;
-            this.aotoComputeCheckBox.Location = new System.Drawing.Point(141, 9);
-            this.aotoComputeCheckBox.Name = "aotoComputeCheckBox";
-            this.aotoComputeCheckBox.Size = new System.Drawing.Size(96, 16);
-            this.aotoComputeCheckBox.TabIndex = 2;
-            this.aotoComputeCheckBox.Text = "自动人机对战";
-            this.aotoComputeCheckBox.UseVisualStyleBackColor = true;
-            this.aotoComputeCheckBox.CheckedChanged += new System.EventHandler(this.aotoComputeCheckBox_CheckedChanged);
+            this.autoComputeCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.autoComputeCheckBox.AutoSize = true;
+            this.autoComputeCheckBox.Location = new System.Drawing.Point(141, 9);
+            this.autoComputeCheckBox.Name = "autoComputeCheckBox";
+            this.autoComputeCheckBox.Size = new System.Drawing.Size(96, 16);
+            this.autoComputeCheckBox.TabIndex = 2;
+            this.autoComputeCheckBox.Text = "自动人机对战";
+            this.autoComputeCheckBox.UseVisualStyleBackColor = true;
+            this.autoComputeCheckBox.CheckedChanged += new System.EventHandler(this.autoComputeCheckBox_CheckedChanged);
             // 
             // restarBtn
             // 
@@ -125,7 +125,7 @@
             // 
             this.bottomPanel.Controls.Add(this.redo);
             this.bottomPanel.Controls.Add(this.computeBtn);
-            this.bottomPanel.Controls.Add(this.aotoComputeCheckBox);
+            this.bottomPanel.Controls.Add(this.autoComputeCheckBox);
             this.bottomPanel.Controls.Add(this.restarBtn);
             this.bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.bottomPanel.Location = new System.Drawing.Point(0, 507);
@@ -133,30 +133,30 @@
             this.bottomPanel.Size = new System.Drawing.Size(639, 32);
             this.bottomPanel.TabIndex = 8;
             // 
-            // mainControl1
+            // mainControl
             // 
-            this.mainControl1.AutoCompute = false;
-            this.mainControl1.BackColor = System.Drawing.Color.Peru;
-            this.mainControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainControl1.Location = new System.Drawing.Point(0, 34);
-            this.mainControl1.Name = "mainControl1";
-            this.mainControl1.Padding = new System.Windows.Forms.Padding(30);
-            this.mainControl1.Size = new System.Drawing.Size(639, 473);
-            this.mainControl1.StepStatusChanged = null;
-            this.mainControl1.TabIndex = 9;
+            this.mainControl.AutoCompute = false;
+            this.mainControl.BackColor = System.Drawing.Color.Peru;
+            this.mainControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mainControl.Location = new System.Drawing.Point(0, 34);
+            this.mainControl.Name = "mainControl";
+            this.mainControl.Padding = new System.Windows.Forms.Padding(30);
+            this.mainControl.Size = new System.Drawing.Size(639, 473);
+            this.mainControl.StepStatusChanged = null;
+            this.mainControl.TabIndex = 9;
             // 
-            // TestWzq
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SandyBrown;
             this.ClientSize = new System.Drawing.Size(639, 539);
-            this.Controls.Add(this.mainControl1);
+            this.Controls.Add(this.mainControl);
             this.Controls.Add(this.bottomPanel);
             this.Controls.Add(this.tableLayoutPanel1);
             this.DoubleBuffered = true;
             this.Name = "TestWzq";
-            this.Text = "TestWzq";
+            this.Text = "MainForm";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.bottomPanel.ResumeLayout(false);
             this.bottomPanel.PerformLayout();
@@ -166,13 +166,13 @@
 
         #endregion
         private System.Windows.Forms.Button computeBtn;
-        private System.Windows.Forms.CheckBox aotoComputeCheckBox;
+        private System.Windows.Forms.CheckBox autoComputeCheckBox;
         private System.Windows.Forms.Button restarBtn;
         private System.Windows.Forms.Button redo;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label whiteGoleLabel;
         private System.Windows.Forms.Label balckGoleLabel;
         private System.Windows.Forms.Panel bottomPanel;
-        private TestWzq.MainControl mainControl1;
+        private TestWzq.MainControl mainControl;
     }
 }

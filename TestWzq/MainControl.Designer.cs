@@ -80,6 +80,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Peru;
             this.Controls.Add(this.tableLayoutPanel);
+            this.DoubleBuffered = true;
             this.Name = "MainControl";
             this.Padding = new System.Windows.Forms.Padding(30);
             this.Size = new System.Drawing.Size(610, 516);
