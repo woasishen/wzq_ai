@@ -65,10 +65,10 @@ namespace wzq_ai
         {
             {0,0 },
             {1,1 },
-            {2,100 },
-            {3,10000 },
-            {4,1000000 },
-            {5,100000000 }
+            {2,50 },
+            {3,2500 },
+            {4,75000 },
+            {5,10000000 }
         };
 
         private readonly CellStatus[][] cellStatusArr;
@@ -110,24 +110,39 @@ namespace wzq_ai
             }
         }
 
-        public int ComputeTotalGole(CellStatus cellStatus)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="oldSelf">走棋之前自己评分</param>
+        /// <param name="oldOther">走棋之前对方评分</param>
+        /// <param name="cellStatus">刚刚走过的走棋方</param>
+        /// <param name="pos">走棋位置</param>
+        /// <returns></returns>
+        public int ComputeTotalGole(int oldSelf, int oldOther, CellStatus cellStatus, Pos pos)
         {
-            var otherGole = ComputeGole(CellStatusHelper.Not(cellStatus));
-            if (otherGole >= GOLE_DICT[4])
-            {
-                return -GOLE_DICT[5];
-            }
-
-            var selfGole = ComputeGole(cellStatus);
-            if (selfGole >= GOLE_DICT[4] * 2)
+            var selfAdd = ComputePosGoleForSelf(cellStatus, pos);
+            var otherMinus = ComputePosGoleForOther(cellStatus, pos);
+            if (selfAdd == GOLE_DICT[5])
             {
                 return GOLE_DICT[5];
             }
 
-            //因为将要轮到对方走，对方分数做增益
-            otherGole *= 2;
+            if (oldOther - otherMinus >= GOLE_DICT[4])
+            {
+                return -GOLE_DICT[5];
+            }
 
-            return selfGole - otherGole;
+            //因为将要轮到对方走，对方分数做增益
+            return oldSelf + selfAdd - 3*(oldOther - otherMinus);
+        }
+
+        public int ComputeTotalGole(CellStatus cellStatus, Pos pos)
+        {
+            cellStatusArr[pos.X][pos.Y] = CellStatus.Empty;
+            var oldSelfGole = ComputeGole(cellStatus);
+            var oldOtherGole = ComputeGole(CellStatusHelper.Not(cellStatus));
+            cellStatusArr[pos.X][pos.Y] = cellStatus;
+            return ComputeTotalGole(oldSelfGole, oldOtherGole, cellStatus, pos);
         }
 
         public int ComputeGole(CellStatus cellStatus)
@@ -140,24 +155,37 @@ namespace wzq_ai
                 {
                     return GOLE_DICT[5];
                 }
-                if (tempGole == GOLE_DICT[4])
-                {
-                    gole += tempGole;
-                }
-                if (tempGole == GOLE_DICT[3])
-                {
-                    gole += tempGole;
-                }
-                if (tempGole == GOLE_DICT[2])
-                {
-                    gole += tempGole;
-                }
-                if (tempGole == GOLE_DICT[1])
-                {
-                    gole += tempGole;
-                }
+                gole += tempGole;
             }
             return gole;
+        }
+
+        public Dictionary<string, int> ComputeGoleAndCount(CellStatus cellStatus)
+        {
+            var result = new Dictionary<string, int>
+            {
+                {"1", 0},
+                {"2", 0},
+                {"3", 0},
+                {"4", 0},
+                {"5", 0},
+                {"gole", 0},
+            };
+
+            foreach (var posLine in posLineArr)
+            {
+                var tempGole = GeneGole(cellStatus, posLine);
+                result["gole"] = result["gole"] + tempGole;
+                for (int i = 1; i < 5; i++)
+                {
+                    if (tempGole == GOLE_DICT[i])
+                    {
+                        result[i.ToString()] += 1;
+                        break;
+                    }
+                }
+            }
+            return result;
         }
 
         public int ComputePosGoleForSelf(CellStatus cellStatus, Pos pos)
@@ -196,7 +224,7 @@ namespace wzq_ai
                 var tempGole = GeneGole(CellStatusHelper.Not(cellStatus), posLine);
                 if (tempGole == GOLE_DICT[5])
                 {
-                    throw new Exception("内部错误");
+                    throw new Exception("对方已经取得胜利");
                 }
                 gole += tempGole;
             }

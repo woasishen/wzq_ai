@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using wzq_ai;
@@ -10,14 +8,15 @@ namespace TestWzq
 {
     public partial class MainForm : Form
     {
-        private readonly StringBuilder sb = new StringBuilder();
-
         public MainForm()
         {
             InitializeComponent();
             mainControl.StepStatusChanged += UpdateGoleText;
+            mainControl.MaxMin.ComputeFinish += span =>
+            {
+                timeLabel.Text = span.ToString();
+            };
         }
-
 
         private void computeBtn_Click(object sender, EventArgs e)
         {
@@ -43,28 +42,17 @@ namespace TestWzq
         {
             UpdateGoleLabel(CellStatus.Black);
             UpdateGoleLabel(CellStatus.White);
+
+            totalGoleLabel.Text = @"total:" + mainControl.TotalGole;
         }
 
         private void UpdateGoleLabel(CellStatus cellStatus)
         {
-            var str = mainControl.MaxMin.Evaluate.ComputeGole(cellStatus).ToString();
-            sb.Clear();
-            sb.Append(cellStatus);
-            sb.Append(":");
-            for (int i = 0; i < str.Length; i++)
-            {
-                if ((str[0] != '-' && i > 0 || i > 1) && (str.Length - i)%2 == 0)
-                {
-                    sb.Append(',');
-                }
-                sb.Append(str[i]);
-            }
-
             Label tempLabel;
             switch (cellStatus)
             {
                 case CellStatus.Black:
-                    tempLabel = balckGoleLabel;
+                    tempLabel = blackGoleLabel;
                     break;
                 case CellStatus.White:
                     tempLabel = whiteGoleLabel;
@@ -72,7 +60,11 @@ namespace TestWzq
                 default:
                     throw new NotSupportedException();
             }
-            tempLabel.Text = sb.ToString().TrimEnd(',');
+            var goleAndCount = mainControl.MaxMin.Evaluate.ComputeGoleAndCount(cellStatus);
+            tempLabel.Text = 
+                cellStatus 
+                + @":" 
+                + goleAndCount["gole"];
         }
     }
 }

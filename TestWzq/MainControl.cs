@@ -22,22 +22,29 @@ namespace TestWzq
         private bool gameOver;
         private float cellWStep;
         private float cellHStep;
+        private float itemDiameter;
+
         private readonly MaxMin maxMin;
         private readonly CellStatus[][] cellArr;
         private readonly Pen linePen = new Pen(Color.Black, 1);
-        private float itemDiameter;
         private readonly Brush numBrush = new SolidBrush(Color.Red);
+        private readonly Brush gameOverBrush = new SolidBrush(Color.Green);
+        private readonly Pen curStepTips = new Pen(Color.Green, 3);
 
         private CellStatus curStatus = CellStatus.Black;
-        private CellStatus CurStatus
+        public CellStatus CurStatus
         {
-            set
+            private set
             {
-                curStatus = value;
                 StepStatusChanged.Invoke();
+                curStatus = value;
             }
             get { return curStatus; }
         }
+
+        public int TotalGole => steps.Count > 0
+            ? MaxMin.Evaluate.ComputeTotalGole(CurStatus, steps.Peek())
+            : 0;
 
         private readonly Stack<Pos> steps = new Stack<Pos>();
         private const float NUM_W = 20;
@@ -65,34 +72,23 @@ namespace TestWzq
 
         public void Redo()
         {
-            if (steps.Count < 2)
+            if (steps.Count == 0)
             {
-                var pos = steps.Pop();
-                cellArr[pos.X][pos.Y] = CellStatus.Empty;
-                CurStatus = CellStatusHelper.Not(CurStatus);
+                return;
             }
-            else
-            {
-                for (int i = 0; i < 2; i++)
-                {
-                    var pos = steps.Pop();
-                    cellArr[pos.X][pos.Y] = CellStatus.Empty;
-                }
-                CurStatus = CellStatus.Black;
-            }
+            var pos = steps.Pop();
+            cellArr[pos.X][pos.Y] = CellStatus.Empty;
+            CurStatus = CellStatusHelper.Not(CurStatus);
             gameOver = false;
             Refresh();
         }
 
         public void RestartGame()
         {
-            tableLayoutPanel.Visible = false;
-            foreach (var cellLine in cellArr)
+            while (steps.Count > 0)
             {
-                for (var j = 0; j < cellLine.Length; j++)
-                {
-                    cellLine[j] = CellStatus.Empty;
-                }
+                var tempPos = steps.Pop();
+                cellArr[tempPos.X][tempPos.Y] = CellStatus.Empty;
             }
             CurStatus = CellStatus.Black;
             gameOver = false;
@@ -129,17 +125,11 @@ namespace TestWzq
         {
             base.OnPaint(e);
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            tableLayoutPanel.Visible = gameOver;
-            if (gameOver)
-            {
-                winLabel.Text = CurStatus == CellStatus.Black ? @"白方胜" : @"黑方胜";
-                winLabel.ForeColor = CurStatus == CellStatus.Black ? Color.White : Color.Black;
-                return;
-            }
-
             DrawLines(e.Graphics);
             DrawNums(e.Graphics);
             DrawCells(e.Graphics);
+
+            DrawGameOver(e.Graphics);
         }
 
         private void DrawNums(Graphics g)
@@ -192,6 +182,10 @@ namespace TestWzq
 
         private void DrawLines(Graphics g)
         {
+            if (gameOver)
+            {
+                return;
+            }
             for (var i = 0; i < CELL_W; i++)
             {
                 g.DrawLine(linePen,
@@ -220,13 +214,46 @@ namespace TestWzq
                     {
                         continue;
                     }
+
                     g.FillEllipse(CellBrush[cellArr[i][j]],
                         Padding.Left + i * cellWStep - itemDiameter / 2,
                         Padding.Top + j * cellHStep - itemDiameter / 2,
                         itemDiameter,
                         itemDiameter);
+                    if (i == steps.Peek().X && j == steps.Peek().Y)
+                    {
+                        g.DrawLine(curStepTips,
+                            Padding.Left + i * cellWStep - -itemDiameter / 2,
+                            Padding.Top + j * cellHStep,
+                            Padding.Left + i * cellWStep + -itemDiameter / 2,
+                            Padding.Top + j * cellHStep);
+                        g.DrawLine(curStepTips,
+                            Padding.Left + i * cellWStep,
+                            Padding.Top + j * cellHStep - -itemDiameter / 2,
+                            Padding.Left + i * cellWStep,
+                            Padding.Top + j * cellHStep + -itemDiameter / 2);
+                    }
                 }
             }
+        }
+
+        private void DrawGameOver(Graphics g)
+        {
+            if (!gameOver)
+            {
+                return;
+            }
+            var str = CurStatus == CellStatus.Black ? @"白方胜" : @"黑方胜";
+            g.DrawString(
+                "五子连珠" + str,
+                new Font(FontFamily.GenericSerif, 30), 
+                gameOverBrush,   
+                ClientRectangle,
+                new StringFormat
+                {
+                    Alignment = StringAlignment.Center,
+                    LineAlignment = StringAlignment.Center
+                });
         }
 
         #endregion

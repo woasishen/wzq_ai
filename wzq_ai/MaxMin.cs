@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace wzq_ai
@@ -9,10 +10,10 @@ namespace wzq_ai
         private readonly Evaluate evaluate;
         private readonly CellStatus[][] cellStatusArr;
 
-        public Evaluate Evaluate
-        {
-            get { return evaluate; }
-        }
+        public Action<TimeSpan> ComputeFinish;
+
+        public Evaluate Evaluate => evaluate;
+
         public MaxMin(CellStatus[][] curStatusArr, int width, int height)
         {
             cellStatusArr = curStatusArr;
@@ -27,6 +28,9 @@ namespace wzq_ai
         /// <returns></returns>
         public GolePos GeneBestPos(CellStatus curStatus, int depth)
         {
+            var start = DateTime.Now;
+            var oldSelfGole = evaluate.ComputeGole(curStatus);
+            var oldOtherGole = evaluate.ComputeGole(CellStatusHelper.Not(curStatus));
             var tempGoleList = new Dictionary<int, Stack<Pos>>();
             for (int x = 0; x < cellStatusArr.Length; x++)
             {
@@ -37,32 +41,23 @@ namespace wzq_ai
                         continue;
                     }
                     cellStatusArr[x][y] = curStatus;
-                    if (x == 9 && y == 2)
-                    {
-                        int a = 1;
-                    }
-                    if (x == 8 && y == 2)
-                    {
-                        int a = 2;
-                    }
-                    if (x == 3 && y == 7)
-                    {
-                        int a = 3;
-                    }
-
                     var tempStack = new Stack<Pos>();
                     tempStack.Push(new Pos(x, y));
-                    tempGoleList[evaluate.ComputeTotalGole(curStatus)] = tempStack;
 
+                    tempGoleList[evaluate.ComputeTotalGole(
+                        oldSelfGole, oldOtherGole, curStatus, tempStack.Peek())] = tempStack;
                     cellStatusArr[x][y] = CellStatus.Empty;
                 }
             }
-            var gole = curStatus == CellStatus.Black
-                ? tempGoleList.Keys.Max()
-                : tempGoleList.Keys.Min();
-
+            var gole = tempGoleList.Keys.Max();
+            ComputeFinish.Invoke(DateTime.Now - start);
             return new GolePos(gole, tempGoleList[gole]);
         }
+
+        //private GolePos RecursionGeneBestPos(CellStatus curStatus, int depth)
+        //{
+            
+        //}
 
         private bool ShouldCompute(int x, int y)
         {

@@ -32,13 +32,15 @@
             this.autoComputeCheckBox = new System.Windows.Forms.CheckBox();
             this.restarBtn = new System.Windows.Forms.Button();
             this.redo = new System.Windows.Forms.Button();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.whiteGoleLabel = new System.Windows.Forms.Label();
-            this.balckGoleLabel = new System.Windows.Forms.Label();
             this.bottomPanel = new System.Windows.Forms.Panel();
             this.mainControl = new TestWzq.MainControl();
-            this.tableLayoutPanel1.SuspendLayout();
+            this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.blackGoleLabel = new System.Windows.Forms.Label();
+            this.whiteGoleLabel = new System.Windows.Forms.Label();
+            this.totalGoleLabel = new System.Windows.Forms.Label();
+            this.timeLabel = new System.Windows.Forms.Label();
             this.bottomPanel.SuspendLayout();
+            this.tableLayoutPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // computeBtn
@@ -67,7 +69,7 @@
             // restarBtn
             // 
             this.restarBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.restarBtn.Location = new System.Drawing.Point(548, 6);
+            this.restarBtn.Location = new System.Drawing.Point(614, 6);
             this.restarBtn.Name = "restarBtn";
             this.restarBtn.Size = new System.Drawing.Size(75, 23);
             this.restarBtn.TabIndex = 4;
@@ -78,48 +80,13 @@
             // redo
             // 
             this.redo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.redo.Location = new System.Drawing.Point(467, 6);
+            this.redo.Location = new System.Drawing.Point(533, 6);
             this.redo.Name = "redo";
             this.redo.Size = new System.Drawing.Size(75, 23);
             this.redo.TabIndex = 5;
             this.redo.Text = "撤销";
             this.redo.UseVisualStyleBackColor = true;
             this.redo.Click += new System.EventHandler(this.redo_Click);
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.whiteGoleLabel, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.balckGoleLabel, 0, 0);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 1;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(639, 34);
-            this.tableLayoutPanel1.TabIndex = 6;
-            // 
-            // whiteGoleLabel
-            // 
-            this.whiteGoleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.whiteGoleLabel.Location = new System.Drawing.Point(322, 0);
-            this.whiteGoleLabel.Name = "whiteGoleLabel";
-            this.whiteGoleLabel.Size = new System.Drawing.Size(314, 34);
-            this.whiteGoleLabel.TabIndex = 1;
-            this.whiteGoleLabel.Text = "label2";
-            this.whiteGoleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // balckGoleLabel
-            // 
-            this.balckGoleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.balckGoleLabel.Location = new System.Drawing.Point(3, 0);
-            this.balckGoleLabel.Name = "balckGoleLabel";
-            this.balckGoleLabel.Size = new System.Drawing.Size(313, 34);
-            this.balckGoleLabel.TabIndex = 0;
-            this.balckGoleLabel.Text = "label1";
-            this.balckGoleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // bottomPanel
             // 
@@ -128,9 +95,9 @@
             this.bottomPanel.Controls.Add(this.autoComputeCheckBox);
             this.bottomPanel.Controls.Add(this.restarBtn);
             this.bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.bottomPanel.Location = new System.Drawing.Point(0, 507);
+            this.bottomPanel.Location = new System.Drawing.Point(0, 560);
             this.bottomPanel.Name = "bottomPanel";
-            this.bottomPanel.Size = new System.Drawing.Size(639, 32);
+            this.bottomPanel.Size = new System.Drawing.Size(705, 32);
             this.bottomPanel.TabIndex = 8;
             // 
             // mainControl
@@ -138,28 +105,87 @@
             this.mainControl.AutoCompute = false;
             this.mainControl.BackColor = System.Drawing.Color.Peru;
             this.mainControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainControl.Location = new System.Drawing.Point(0, 34);
+            this.mainControl.Location = new System.Drawing.Point(0, 27);
             this.mainControl.Name = "mainControl";
             this.mainControl.Padding = new System.Windows.Forms.Padding(30);
-            this.mainControl.Size = new System.Drawing.Size(639, 473);
+            this.mainControl.Size = new System.Drawing.Size(705, 533);
             this.mainControl.StepStatusChanged = null;
             this.mainControl.TabIndex = 9;
+            // 
+            // tableLayoutPanel
+            // 
+            this.tableLayoutPanel.ColumnCount = 4;
+            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel.Controls.Add(this.blackGoleLabel, 0, 0);
+            this.tableLayoutPanel.Controls.Add(this.whiteGoleLabel, 1, 0);
+            this.tableLayoutPanel.Controls.Add(this.totalGoleLabel, 2, 0);
+            this.tableLayoutPanel.Controls.Add(this.timeLabel, 3, 0);
+            this.tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tableLayoutPanel.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel.Name = "tableLayoutPanel";
+            this.tableLayoutPanel.RowCount = 1;
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel.Size = new System.Drawing.Size(705, 27);
+            this.tableLayoutPanel.TabIndex = 10;
+            // 
+            // blackGoleLabel
+            // 
+            this.blackGoleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.blackGoleLabel.Location = new System.Drawing.Point(3, 0);
+            this.blackGoleLabel.Name = "blackGoleLabel";
+            this.blackGoleLabel.Size = new System.Drawing.Size(170, 27);
+            this.blackGoleLabel.TabIndex = 0;
+            this.blackGoleLabel.Text = "黑方得分：";
+            this.blackGoleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // whiteGoleLabel
+            // 
+            this.whiteGoleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.whiteGoleLabel.Location = new System.Drawing.Point(179, 0);
+            this.whiteGoleLabel.Name = "whiteGoleLabel";
+            this.whiteGoleLabel.Size = new System.Drawing.Size(170, 27);
+            this.whiteGoleLabel.TabIndex = 1;
+            this.whiteGoleLabel.Text = "白方得分：";
+            this.whiteGoleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // totalGoleLabel
+            // 
+            this.totalGoleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.totalGoleLabel.Location = new System.Drawing.Point(355, 0);
+            this.totalGoleLabel.Name = "totalGoleLabel";
+            this.totalGoleLabel.Size = new System.Drawing.Size(170, 27);
+            this.totalGoleLabel.TabIndex = 2;
+            this.totalGoleLabel.Text = "本次走法得分：";
+            this.totalGoleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // timeLabel
+            // 
+            this.timeLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.timeLabel.Location = new System.Drawing.Point(531, 0);
+            this.timeLabel.Name = "timeLabel";
+            this.timeLabel.Size = new System.Drawing.Size(171, 27);
+            this.timeLabel.TabIndex = 3;
+            this.timeLabel.Text = "计算时长";
+            this.timeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SandyBrown;
-            this.ClientSize = new System.Drawing.Size(639, 539);
+            this.ClientSize = new System.Drawing.Size(705, 592);
             this.Controls.Add(this.mainControl);
+            this.Controls.Add(this.tableLayoutPanel);
             this.Controls.Add(this.bottomPanel);
-            this.Controls.Add(this.tableLayoutPanel1);
             this.DoubleBuffered = true;
-            this.Name = "TestWzq";
+            this.Name = "MainForm";
             this.Text = "MainForm";
-            this.tableLayoutPanel1.ResumeLayout(false);
             this.bottomPanel.ResumeLayout(false);
             this.bottomPanel.PerformLayout();
+            this.tableLayoutPanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -169,10 +195,12 @@
         private System.Windows.Forms.CheckBox autoComputeCheckBox;
         private System.Windows.Forms.Button restarBtn;
         private System.Windows.Forms.Button redo;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Label whiteGoleLabel;
-        private System.Windows.Forms.Label balckGoleLabel;
         private System.Windows.Forms.Panel bottomPanel;
         private TestWzq.MainControl mainControl;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel;
+        private System.Windows.Forms.Label blackGoleLabel;
+        private System.Windows.Forms.Label whiteGoleLabel;
+        private System.Windows.Forms.Label totalGoleLabel;
+        private System.Windows.Forms.Label timeLabel;
     }
 }
