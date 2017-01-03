@@ -43,7 +43,7 @@ namespace TestWzq
         }
 
         public int TotalGole => steps.Count > 0
-            ? MaxMin.Evaluate.ComputeTotalGole(CurStatus, steps.Peek())
+            ? MaxMin.Evaluate.ComputePosGole(steps.Peek())
             : 0;
 
         private readonly Stack<Pos> steps = new Stack<Pos>();
@@ -291,7 +291,7 @@ namespace TestWzq
         private void CheckGameOver(Pos pos)
         {
             steps.Push(pos);
-            if (maxMin.Evaluate.ComputePosGoleForSelf(CurStatus, pos) == Evaluate.GOLE_DICT[5])
+            if (maxMin.Evaluate.ComputePosGole(CurStatus, pos) == Evaluate.GOLE_DICT[5])
             {
                 gameOver = true;
             }
