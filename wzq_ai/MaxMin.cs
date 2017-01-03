@@ -23,14 +23,13 @@ namespace wzq_ai
         /// <summary>
         /// 推测最佳位置
         /// </summary>
-        /// <param name="curStatus">当前走棋方</param>
+        /// <param name="cellStatus">当前走棋方</param>
         /// <param name="depth">计算深度</param>
         /// <returns></returns>
-        public GolePos GeneBestPos(CellStatus curStatus, int depth)
+        public GolePos GeneBestPos(CellStatus cellStatus, int depth)
         {
-            var start = DateTime.Now;
-            var oldSelfGole = evaluate.ComputeGole(curStatus);
-            var oldOtherGole = evaluate.ComputeGole(CellStatusHelper.Not(curStatus));
+            var oldSelfGole = evaluate.ComputeGole(cellStatus);
+            var oldOtherGole = evaluate.ComputeGole(CellStatusHelper.Not(cellStatus));
             var tempGoleList = new Dictionary<int, Stack<Pos>>();
             for (int x = 0; x < cellStatusArr.Length; x++)
             {
@@ -40,24 +39,45 @@ namespace wzq_ai
                     {
                         continue;
                     }
-                    cellStatusArr[x][y] = curStatus;
-                    var tempStack = new Stack<Pos>();
-                    tempStack.Push(new Pos(x, y));
+                    cellStatusArr[x][y] = cellStatus;
+                    var tempPos = new Pos(x, y);
+                    var selfAdd = evaluate.ComputePosGoleForSelf(cellStatus, tempPos);
+                    if (selfAdd == Evaluate.GOLE_DICT[5])
+                    {
+                        var tempStack = new Stack<Pos>();
+                        tempStack.Push(tempPos);
+                        cellStatusArr[x][y] = CellStatus.Empty;
+                        return new GolePos(Evaluate.GOLE_DICT[5], tempStack);
+                    }
+                    var otherMinus = evaluate.ComputePosGoleForOther(cellStatus, tempPos);
+                    var totalGole = evaluate.ComputeTotalGole(
+                        oldSelfGole, oldOtherGole, selfAdd, otherMinus);
+                    if (otherMinus >= Evaluate.GOLE_DICT[4])
+                    {
+                        var tempStack = new Stack<Pos>();
+                        tempStack.Push(tempPos);
+                        cellStatusArr[x][y] = CellStatus.Empty;
+                        return new GolePos(totalGole, tempStack);
+                    }
 
-                    tempGoleList[evaluate.ComputeTotalGole(
-                        oldSelfGole, oldOtherGole, curStatus, tempStack.Peek())] = tempStack;
+                    if (depth == 0 || (otherMinus == 0 && selfAdd < 20))
+                    {
+                        var tempStack = new Stack<Pos>();
+                        tempStack.Push(tempPos);
+                        tempGoleList[totalGole] = tempStack;
+                    }
+                    else
+                    {
+                        var tempGolePos = GeneBestPos(CellStatusHelper.Not(cellStatus), depth - 1);
+                        tempGolePos.PosStack.Push(tempPos);
+                        tempGoleList[tempGolePos.Gole] = tempGolePos.PosStack;
+                    }
                     cellStatusArr[x][y] = CellStatus.Empty;
                 }
             }
             var gole = tempGoleList.Keys.Max();
-            ComputeFinish.Invoke(DateTime.Now - start);
             return new GolePos(gole, tempGoleList[gole]);
         }
-
-        //private GolePos RecursionGeneBestPos(CellStatus curStatus, int depth)
-        //{
-            
-        //}
 
         private bool ShouldCompute(int x, int y)
         {

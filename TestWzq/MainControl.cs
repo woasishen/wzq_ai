@@ -62,7 +62,7 @@ namespace TestWzq
             {
                 return;
             }
-            var result = maxMin.GeneBestPos(CurStatus, 0);
+            var result = maxMin.GeneBestPos(CurStatus, 2);
             var pos = result.PosStack.Peek();
             cellArr[pos.X][pos.Y] = CurStatus;
             CheckGameOver(pos);

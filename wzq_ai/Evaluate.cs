@@ -115,13 +115,12 @@ namespace wzq_ai
         /// </summary>
         /// <param name="oldSelf">走棋之前自己评分</param>
         /// <param name="oldOther">走棋之前对方评分</param>
-        /// <param name="cellStatus">刚刚走过的走棋方</param>
-        /// <param name="pos">走棋位置</param>
+        /// <param name="selfAdd"></param>
+        /// <param name="otherMinus"></param>
         /// <returns></returns>
-        public int ComputeTotalGole(int oldSelf, int oldOther, CellStatus cellStatus, Pos pos)
+        public int ComputeTotalGole(int oldSelf, int oldOther, int selfAdd, int otherMinus)
         {
-            var selfAdd = ComputePosGoleForSelf(cellStatus, pos);
-            var otherMinus = ComputePosGoleForOther(cellStatus, pos);
+
             if (selfAdd == GOLE_DICT[5])
             {
                 return GOLE_DICT[5];
@@ -142,7 +141,9 @@ namespace wzq_ai
             var oldSelfGole = ComputeGole(cellStatus);
             var oldOtherGole = ComputeGole(CellStatusHelper.Not(cellStatus));
             cellStatusArr[pos.X][pos.Y] = cellStatus;
-            return ComputeTotalGole(oldSelfGole, oldOtherGole, cellStatus, pos);
+            return ComputeTotalGole(oldSelfGole, oldOtherGole, 
+                ComputePosGoleForSelf(cellStatus, pos),
+                ComputePosGoleForOther(cellStatus, pos));
         }
 
         public int ComputeGole(CellStatus cellStatus)
