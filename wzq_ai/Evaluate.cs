@@ -179,7 +179,7 @@ namespace wzq_ai
             var gole = 0;
             foreach (var posLine in posContainersDict[pos])
             {
-                var count = ComputeCount(posLine);
+                var count = ComputeCount(posLine) + 1;
                 if (count == 5)
                 {
                     return GOLE_DICT[5];

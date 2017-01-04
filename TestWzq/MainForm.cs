@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using wzq_ai;
 
@@ -12,9 +10,10 @@ namespace TestWzq
         {
             InitializeComponent();
             mainControl.StepStatusChanged += UpdateGoleText;
-            mainControl.MaxMin.ComputeFinish += span =>
+            mainControl.MaxMin.ComputeFinish += (span, times) =>
             {
                 timeLabel.Text = span.ToString();
+                timesLabel.Text = times.ToString();
             };
         }
 
