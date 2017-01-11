@@ -39,6 +39,7 @@
             this.whiteGoleLabel = new System.Windows.Forms.Label();
             this.totalGoleLabel = new System.Windows.Forms.Label();
             this.timeLabel = new System.Windows.Forms.Label();
+            this.computeTimesLabel = new System.Windows.Forms.Label();
             this.bottomPanel.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             this.SuspendLayout();
@@ -114,15 +115,17 @@
             // 
             // tableLayoutPanel
             // 
-            this.tableLayoutPanel.ColumnCount = 4;
-            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel.ColumnCount = 5;
+            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel.Controls.Add(this.blackGoleLabel, 0, 0);
             this.tableLayoutPanel.Controls.Add(this.whiteGoleLabel, 1, 0);
             this.tableLayoutPanel.Controls.Add(this.totalGoleLabel, 2, 0);
             this.tableLayoutPanel.Controls.Add(this.timeLabel, 3, 0);
+            this.tableLayoutPanel.Controls.Add(this.computeTimesLabel, 4, 0);
             this.tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel.Name = "tableLayoutPanel";
@@ -136,7 +139,7 @@
             this.blackGoleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.blackGoleLabel.Location = new System.Drawing.Point(3, 0);
             this.blackGoleLabel.Name = "blackGoleLabel";
-            this.blackGoleLabel.Size = new System.Drawing.Size(170, 27);
+            this.blackGoleLabel.Size = new System.Drawing.Size(135, 27);
             this.blackGoleLabel.TabIndex = 0;
             this.blackGoleLabel.Text = "黑方得分：";
             this.blackGoleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -144,9 +147,9 @@
             // whiteGoleLabel
             // 
             this.whiteGoleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.whiteGoleLabel.Location = new System.Drawing.Point(179, 0);
+            this.whiteGoleLabel.Location = new System.Drawing.Point(144, 0);
             this.whiteGoleLabel.Name = "whiteGoleLabel";
-            this.whiteGoleLabel.Size = new System.Drawing.Size(170, 27);
+            this.whiteGoleLabel.Size = new System.Drawing.Size(135, 27);
             this.whiteGoleLabel.TabIndex = 1;
             this.whiteGoleLabel.Text = "白方得分：";
             this.whiteGoleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -154,9 +157,9 @@
             // totalGoleLabel
             // 
             this.totalGoleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.totalGoleLabel.Location = new System.Drawing.Point(355, 0);
+            this.totalGoleLabel.Location = new System.Drawing.Point(285, 0);
             this.totalGoleLabel.Name = "totalGoleLabel";
-            this.totalGoleLabel.Size = new System.Drawing.Size(170, 27);
+            this.totalGoleLabel.Size = new System.Drawing.Size(135, 27);
             this.totalGoleLabel.TabIndex = 2;
             this.totalGoleLabel.Text = "本次走法得分：";
             this.totalGoleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -164,12 +167,22 @@
             // timeLabel
             // 
             this.timeLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.timeLabel.Location = new System.Drawing.Point(531, 0);
+            this.timeLabel.Location = new System.Drawing.Point(426, 0);
             this.timeLabel.Name = "timeLabel";
-            this.timeLabel.Size = new System.Drawing.Size(171, 27);
+            this.timeLabel.Size = new System.Drawing.Size(135, 27);
             this.timeLabel.TabIndex = 3;
             this.timeLabel.Text = "计算时长";
             this.timeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // computeTimesLabel
+            // 
+            this.computeTimesLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.computeTimesLabel.Location = new System.Drawing.Point(567, 0);
+            this.computeTimesLabel.Name = "computeTimesLabel";
+            this.computeTimesLabel.Size = new System.Drawing.Size(135, 27);
+            this.computeTimesLabel.TabIndex = 4;
+            this.computeTimesLabel.Text = "递归次数";
+            this.computeTimesLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // MainForm
             // 
@@ -202,5 +215,6 @@
         private System.Windows.Forms.Label whiteGoleLabel;
         private System.Windows.Forms.Label totalGoleLabel;
         private System.Windows.Forms.Label timeLabel;
+        private System.Windows.Forms.Label computeTimesLabel;
     }
 }

@@ -12,9 +12,10 @@ namespace TestWzq
         {
             InitializeComponent();
             mainControl.StepStatusChanged += UpdateGoleText;
-            mainControl.MaxMin.ComputeFinish += span =>
+            mainControl.MaxMin.ComputeFinish += (span, times) =>
             {
                 timeLabel.Text = span.ToString();
+                computeTimesLabel.Text = times.ToString();
             };
         }
 

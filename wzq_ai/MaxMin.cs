@@ -9,8 +9,9 @@ namespace wzq_ai
     {
         private readonly Evaluate evaluate;
         private readonly CellStatus[][] cellStatusArr;
+        private int recusionTimes;
 
-        public Action<TimeSpan> ComputeFinish;
+        public Action<TimeSpan, int> ComputeFinish;
 
         public Evaluate Evaluate => evaluate;
 
@@ -20,14 +21,24 @@ namespace wzq_ai
             evaluate = new Evaluate(cellStatusArr, width, height);
         }
 
+        public GolePos GeneBestPos(CellStatus cellStatus)
+        {
+            var startTime = DateTime.Now;
+            recusionTimes = 0;
+            var result = GeneBestPos(cellStatus, 2);
+            ComputeFinish.Invoke(startTime - DateTime.Now, recusionTimes);
+            return result;
+        }
+
         /// <summary>
         /// 推测最佳位置
         /// </summary>
         /// <param name="cellStatus">当前走棋方</param>
         /// <param name="depth">计算深度</param>
         /// <returns></returns>
-        public GolePos GeneBestPos(CellStatus cellStatus, int depth)
+        private GolePos GeneBestPos(CellStatus cellStatus, int depth)
         {
+            recusionTimes++;
             var oldSelfGole = evaluate.ComputeGole(cellStatus);
             var oldOtherGole = evaluate.ComputeGole(CellStatusHelper.Not(cellStatus));
             var tempGoleList = new Dictionary<int, Stack<Pos>>();
