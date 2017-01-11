@@ -12,3 +12,4 @@ C:\Users\Administrator.SC-201608021220\Documents\wzq_ai\wzq_ai\bin\Debug\wzq_ai.
 C:\Users\Administrator.SC-201608021220\Documents\wzq_ai\wzq_ai\bin\Debug\wzq_ai.pdb
 C:\Users\Administrator.SC-201608021220\Documents\wzq_ai\wzq_ai\obj\Debug\wzq_ai.dll
 C:\Users\Administrator.SC-201608021220\Documents\wzq_ai\wzq_ai\obj\Debug\wzq_ai.pdb
+C:\Users\Administrator.SC-201608021220\Documents\wzq_ai\wzq_ai\obj\Debug\wzq_ai.csprojResolveAssemblyReference.cache
