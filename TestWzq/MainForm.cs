@@ -12,11 +12,7 @@ namespace TestWzq
         {
             InitializeComponent();
             mainControl.StepStatusChanged += UpdateGoleText;
-            mainControl.MaxMin.ComputeFinish += (span, times) =>
-            {
-                timeLabel.Text = span.ToString();
-                computeTimesLabel.Text = times.ToString();
-            };
+
         }
 
         private void computeBtn_Click(object sender, EventArgs e)
@@ -44,7 +40,7 @@ namespace TestWzq
             UpdateGoleLabel(CellStatus.Black);
             UpdateGoleLabel(CellStatus.White);
 
-            totalGoleLabel.Text = @"total:" + mainControl.TotalGole;
+
         }
 
         private void UpdateGoleLabel(CellStatus cellStatus)
@@ -61,11 +57,6 @@ namespace TestWzq
                 default:
                     throw new NotSupportedException();
             }
-            var goleAndCount = mainControl.MaxMin.Evaluate.ComputeGoleAndCount(cellStatus);
-            tempLabel.Text = 
-                cellStatus 
-                + @":" 
-                + goleAndCount["gole"];
         }
     }
 }

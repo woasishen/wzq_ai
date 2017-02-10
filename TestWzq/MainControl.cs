@@ -9,8 +9,6 @@ namespace TestWzq
 {
     public partial class MainControl : UserControl
     {
-        private const int CELL_W = 15;
-        private const int CELL_H = 15;
         private const float ITEM_SIZE_SCALE = 0.5f;
         private static readonly Dictionary<CellStatus, Brush> CellBrush =
             new Dictionary<CellStatus, Brush>
@@ -24,8 +22,6 @@ namespace TestWzq
         private float cellHStep;
         private float itemDiameter;
 
-        private readonly MaxMin maxMin;
-        private readonly CellStatus[][] cellArr;
         private readonly Pen linePen = new Pen(Color.Black, 1);
         private readonly Brush numBrush = new SolidBrush(Color.Red);
         private readonly Brush gameOverBrush = new SolidBrush(Color.Green);
@@ -42,15 +38,9 @@ namespace TestWzq
             get { return curStatus; }
         }
 
-        public int TotalGole => steps.Count > 0
-            ? MaxMin.Evaluate.ComputeTotalGole(CurStatus, steps.Peek())
-            : 0;
-
         private readonly Stack<Pos> steps = new Stack<Pos>();
         private const float NUM_W = 20;
         private const float NUM_H = 20;
-
-        public MaxMin MaxMin => maxMin;
 
         public bool AutoCompute { get; set; }
 
@@ -62,12 +52,6 @@ namespace TestWzq
             {
                 return;
             }
-            var result = maxMin.GeneBestPos(CurStatus);
-            var pos = result.PosStack.Peek();
-            cellArr[pos.X][pos.Y] = CurStatus;
-            CheckGameOver(pos);
-            CurStatus = CellStatusHelper.Not(CurStatus);
-            Refresh();
         }
 
         public void Redo()
@@ -77,7 +61,6 @@ namespace TestWzq
                 return;
             }
             var pos = steps.Pop();
-            cellArr[pos.X][pos.Y] = CellStatus.Empty;
             CurStatus = CellStatusHelper.Not(CurStatus);
             gameOver = false;
             Refresh();
@@ -88,7 +71,6 @@ namespace TestWzq
             while (steps.Count > 0)
             {
                 var tempPos = steps.Pop();
-                cellArr[tempPos.X][tempPos.Y] = CellStatus.Empty;
             }
             CurStatus = CellStatus.Black;
             gameOver = false;
@@ -98,24 +80,16 @@ namespace TestWzq
         public MainControl()
         {
             InitializeComponent();
-
-            cellArr = new CellStatus[CELL_W][];
-            for (var i = 0; i < cellArr.Length; i++)
-            {
-                cellArr[i] = new CellStatus[CELL_H];
-                for (var j = 0; j < cellArr[i].Length; j++)
-                {
-                    cellArr[i][j] = CellStatus.Empty;
-                }
-            }
-            maxMin = new MaxMin(cellArr, CELL_W, CELL_H);
+            var border = new Border();
             ReInitCellSize();
         }
 
         private void ReInitCellSize()
         {
-            cellWStep = ((float)ClientSize.Width - Padding.Left - Padding.Right) / (CELL_W - 1);
-            cellHStep = ((float)ClientSize.Height - Padding.Top - Padding.Bottom) / (CELL_H - 1);
+            cellWStep = ((float)ClientSize.Width - Padding.Left - Padding.Right)
+                / (GlobalConst.BORDER_SIZE - 1);
+            cellHStep = ((float)ClientSize.Height - Padding.Top - Padding.Bottom)
+                / (GlobalConst.BORDER_SIZE - 1);
             itemDiameter = Math.Min(cellWStep, cellHStep) * ITEM_SIZE_SCALE;
         }
 
@@ -144,7 +118,7 @@ namespace TestWzq
                     Alignment = StringAlignment.Far,
                     LineAlignment = StringAlignment.Far
                 });
-            for (int i = 1; i < CELL_W; i++)
+            for (int i = 1; i < GlobalConst.BORDER_SIZE; i++)
             {
                 g.DrawString(
                     i.ToString(),
@@ -161,7 +135,7 @@ namespace TestWzq
                         LineAlignment = StringAlignment.Far
                     });
             }
-            for (int i = 1; i < CELL_H; i++)
+            for (int i = 1; i < GlobalConst.BORDER_SIZE; i++)
             {
                 g.DrawString(
                     i.ToString(),
@@ -186,7 +160,7 @@ namespace TestWzq
             {
                 return;
             }
-            for (var i = 0; i < CELL_W; i++)
+            for (var i = 0; i < GlobalConst.BORDER_SIZE; i++)
             {
                 g.DrawLine(linePen,
                     i * cellWStep + Padding.Left,
@@ -194,7 +168,7 @@ namespace TestWzq
                     i * cellWStep + Padding.Left,
                     ClientSize.Height - Padding.Bottom);
             }
-            for (var i = 0; i < CELL_H; i++)
+            for (var i = 0; i < GlobalConst.BORDER_SIZE; i++)
             {
                 g.DrawLine(linePen,
                     Padding.Left,
@@ -206,20 +180,20 @@ namespace TestWzq
 
         private void DrawCells(Graphics g)
         {
-            for (var i = 0; i < CELL_W; i++)
+            for (var i = 0; i < GlobalConst.BORDER_SIZE; i++)
             {
-                for (var j = 0; j < CELL_H; j++)
+                for (var j = 0; j < GlobalConst.BORDER_SIZE; j++)
                 {
-                    if (cellArr[i][j] == CellStatus.Empty)
-                    {
-                        continue;
-                    }
+                    //if (cellArr[i][j] == CellStatus.Empty)
+                    //{
+                    //    continue;
+                    //}
 
-                    g.FillEllipse(CellBrush[cellArr[i][j]],
-                        Padding.Left + i * cellWStep - itemDiameter / 2,
-                        Padding.Top + j * cellHStep - itemDiameter / 2,
-                        itemDiameter,
-                        itemDiameter);
+                    //g.FillEllipse(CellBrush[cellArr[i][j]],
+                    //    Padding.Left + i * cellWStep - itemDiameter / 2,
+                    //    Padding.Top + j * cellHStep - itemDiameter / 2,
+                    //    itemDiameter,
+                    //    itemDiameter);
                     if (i == steps.Peek().X && j == steps.Peek().Y)
                     {
                         g.DrawLine(curStepTips,
@@ -267,34 +241,34 @@ namespace TestWzq
 
         private void MainControl_MouseClick(object sender, MouseEventArgs e)
         {
-            if (gameOver)
-            {
-                return;
-            }
-            var x = (int)Math.Round((e.X - Padding.Left) / cellWStep);
-            var y = (int)Math.Round((e.Y - Padding.Top) / cellHStep);
-            if (x < 0 || y < 0 || x > CELL_W || y > CELL_H || cellArr[x][y] != CellStatus.Empty)
-            {
-                return;
-            }
+            //if (gameOver)
+            //{
+            //    return;
+            //}
+            //var x = (int)Math.Round((e.X - Padding.Left) / cellWStep);
+            //var y = (int)Math.Round((e.Y - Padding.Top) / cellHStep);
+            //if (x < 0 || y < 0 || x > GlobalConst.BORDER_SIZE || y > GlobalConst.BORDER_SIZE || cellArr[x][y] != CellStatus.Empty)
+            //{
+            //    return;
+            //}
 
-            cellArr[x][y] = CurStatus;
-            CheckGameOver(new Pos(x, y));
-            CurStatus = CellStatusHelper.Not(CurStatus);
-            Refresh();
-            if (AutoCompute)
-            {
-                GeneNextStep();
-            }
+            //cellArr[x][y] = CurStatus;
+            //CheckGameOver(new Pos(x, y));
+            //CurStatus = CellStatusHelper.Not(CurStatus);
+            //Refresh();
+            //if (AutoCompute)
+            //{
+            //    GeneNextStep();
+            //}
         }
 
         private void CheckGameOver(Pos pos)
         {
-            steps.Push(pos);
-            if (maxMin.Evaluate.ComputePosGoleForSelf(CurStatus, pos) == Evaluate.GOLE_DICT[5])
-            {
-                gameOver = true;
-            }
+            //steps.Push(pos);
+            //if (maxMin.Evaluate.ComputePosGoleForSelf(CurStatus, pos) == Evaluate.GOLE_DICT[5])
+            //{
+            //    gameOver = true;
+            //}
         }
 
         protected override void OnGotFocus(EventArgs e)

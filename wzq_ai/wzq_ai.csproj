@@ -41,9 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Border.cs" />
+    <Compile Include="Entities.cs" />
     <Compile Include="Evaluate.cs" />
-    <Compile Include="Log.cs" />
     <Compile Include="MaxMin.cs" />
+    <Compile Include="Neighbor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
