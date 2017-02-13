@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms.VisualStyles;
 
 namespace wzq_ai
 {
     public class Border
     {
-        private bool Empty = true;
         private readonly CellStatus[][] cellStatusArr;
-        private readonly SortedSet<Pos> sortedByX = new SortedSet<Pos>(new SortByX());
-        private readonly SortedSet<Pos> sortedByY = new SortedSet<Pos>(new SortByY());
+        private readonly Stack<Pos> stepStack = new Stack<Pos>();
 
         private readonly Evaluate evaluate;
         private readonly int[][] blackPosGoles;
@@ -83,8 +82,7 @@ namespace wzq_ai
             }
             cellStatusArr[pos.X][pos.Y] = cellStatus;
 
-            sortedByX.Add(pos);
-            sortedByY.Add(pos);
+            stepStack.Push(pos);
 
             UpdateAffectPosScore(pos);
 
@@ -96,16 +94,14 @@ namespace wzq_ai
         /// </summary>
         /// <param name="pos"></param>
         /// <returns></returns>
-        public bool UnPutChess(Pos pos)
+        public bool UnPutChess()
         {
+            var pos = stepStack.Pop();
             if (cellStatusArr[pos.X][pos.Y] == CellStatus.Empty)
             {
                 return false;
             }
             cellStatusArr[pos.X][pos.Y] = CellStatus.Empty;
-
-            sortedByX.Remove(pos);
-            sortedByY.Remove(pos);
 
             UpdateAffectPosScore(pos);
 
@@ -118,11 +114,7 @@ namespace wzq_ai
         /// <returns></returns>
         public int MinX()
         {
-            if (Empty)
-            {
-                throw new Exception("CellArr is Empty");
-            }
-            return sortedByX.First().X;
+            return stepStack.Min(pos => pos.X);
         }
 
         /// <summary>
@@ -131,11 +123,7 @@ namespace wzq_ai
         /// <returns></returns>
         public int MaxX()
         {
-            if (Empty)
-            {
-                throw new Exception("CellArr is Empty");
-            }
-            return sortedByX.Last().X;
+            return stepStack.Max(pos => pos.X);
         }
 
         /// <summary>
@@ -144,11 +132,7 @@ namespace wzq_ai
         /// <returns></returns>
         public int MinY()
         {
-            if (Empty)
-            {
-                throw new Exception("CellArr is Empty");
-            }
-            return sortedByY.First().Y;
+            return stepStack.Min(pos => pos.Y);
         }
 
         /// <summary>
@@ -157,11 +141,7 @@ namespace wzq_ai
         /// <returns></returns>
         public int MaxY()
         {
-            if (Empty)
-            {
-                throw new Exception("CellArr is Empty");
-            }
-            return sortedByY.Last().Y;
+            return stepStack.Max(pos => pos.Y);
         }
 
         private void UpdateAffectPosScore(Pos pos)

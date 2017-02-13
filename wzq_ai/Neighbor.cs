@@ -12,7 +12,14 @@ namespace wzq_ai
             this.border = border;
         }
 
-        public List<Pos> GenNeighbors()
+        public List<Pos> GenPossiblePos()
+        {
+            var neighbors = GetNeighbors();
+
+
+        }
+
+        private List<Pos> GetNeighbors()
         {
             var minX = border.MinX() - SEARCH_RANGE;
             var maxX = border.MaxX() + SEARCH_RANGE;
