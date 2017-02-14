@@ -12,13 +12,13 @@
             neighbor = new Neighbor(border);
         }
 
-        public Pos FindBestPos()
-        {
-            var neighbors = neighbor.GenNeighbors();
-            foreach (var neighbor in neighbors)
-            {
-                
-            }
-        }
+        //public Pos FindBestPos()
+        //{
+        //    var neighbors = neighbor.GenNeighbors();
+        //    foreach (var neighbor in neighbors)
+        //    {
+
+        //    }
+        //}
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms.VisualStyles;
 
 namespace wzq_ai
 {
@@ -92,7 +91,6 @@ namespace wzq_ai
         /// <summary>
         /// 悔棋
         /// </summary>
-        /// <param name="pos"></param>
         /// <returns></returns>
         public bool UnPutChess()
         {

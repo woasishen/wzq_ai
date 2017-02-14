@@ -12,12 +12,12 @@ namespace wzq_ai
             this.border = border;
         }
 
-        public List<Pos> GenPossiblePos()
-        {
-            var neighbors = GetNeighbors();
+        //public List<Pos> GenPossiblePos()
+        //{
+        //    var neighbors = GetNeighbors();
 
 
-        }
+        //}
 
         private List<Pos> GetNeighbors()
         {
