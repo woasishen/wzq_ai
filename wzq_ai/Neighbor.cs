@@ -12,12 +12,36 @@ namespace wzq_ai
             this.border = border;
         }
 
-        //public List<Pos> GenPossiblePos()
-        //{
-        //    var neighbors = GetNeighbors();
+        public List<Pos> GenPossiblePos(CellStatus curStatus)
+        {
+            List<Pos> five = new List<Pos>();
+            List<Pos> doubleFour = new List<Pos>();
+            var neighbors = GetNeighbors();
 
-
-        //}
+            foreach (var neighbor in neighbors)
+            {
+                var blackGole = border.GetBlackPosGole(neighbor);
+                var whiteGole = border.GetWhitePosGole(neighbor);
+                if (blackGole >= Evaluate.GOLE_DICT[5] || whiteGole >= Evaluate.GOLE_DICT[5])
+                {
+                    five.Add(neighbor);
+                    continue;
+                }
+                if (blackGole >= 2 * Evaluate.GOLE_DICT[4] || whiteGole >= Evaluate.GOLE_DICT[4])
+                {
+                    doubleFour.Add(neighbor);
+                }
+            }
+            if (five.Any())
+            {
+                return five;
+            }
+            if (doubleFour.Any())
+            {
+                return doubleFour;
+            }
+            return neighbors;
+        }
 
         private List<Pos> GetNeighbors()
         {
