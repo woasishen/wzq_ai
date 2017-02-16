@@ -11,8 +11,7 @@ namespace TestWzq
         public MainForm()
         {
             InitializeComponent();
-            mainControl.StepStatusChanged += UpdateGoleText;
-
+            mainControl.StepStatusChanged = UpdateGoleText;
         }
 
         private void computeBtn_Click(object sender, EventArgs e)
@@ -39,8 +38,6 @@ namespace TestWzq
         {
             UpdateGoleLabel(CellStatus.Black);
             UpdateGoleLabel(CellStatus.White);
-
-
         }
 
         private void UpdateGoleLabel(CellStatus cellStatus)

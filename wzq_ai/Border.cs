@@ -6,65 +6,114 @@ namespace wzq_ai
 {
     public class Border
     {
-        private readonly CellStatus[][] cellStatusArr;
-        private readonly Stack<Pos> stepStack = new Stack<Pos>();
+        private readonly CellStatus[][] _cellStatusArr;
+        private readonly Stack<Pos> _stepStack = new Stack<Pos>();
 
-        private readonly Evaluate evaluate;
-        private readonly int[][] blackPosGoles;
-        private readonly int[][] whitePosGoles;
+        private readonly Evaluate _evaluate;
+        private readonly MaxMin _maxMin;
+        private readonly int[][] _blackPosGoles;
+        private readonly int[][] _whitePosGoles;
+
+        public Pos LastStepPos => _stepStack.Peek();
 
         public Border()
         {
-            cellStatusArr = new CellStatus[GlobalConst.BORDER_SIZE][];
-            blackPosGoles = new int[GlobalConst.BORDER_SIZE][];
-            whitePosGoles = new int[GlobalConst.BORDER_SIZE][];
+            _cellStatusArr = new CellStatus[GlobalConst.BORDER_SIZE][];
+            _blackPosGoles = new int[GlobalConst.BORDER_SIZE][];
+            _whitePosGoles = new int[GlobalConst.BORDER_SIZE][];
 
             for (var i = 0; i < GlobalConst.BORDER_SIZE; i++)
             {
-                cellStatusArr[i] = new CellStatus[GlobalConst.BORDER_SIZE];
-                blackPosGoles[i] = new int[GlobalConst.BORDER_SIZE];
-                whitePosGoles[i] = new int[GlobalConst.BORDER_SIZE];
+                _cellStatusArr[i] = new CellStatus[GlobalConst.BORDER_SIZE];
+                _blackPosGoles[i] = new int[GlobalConst.BORDER_SIZE];
+                _whitePosGoles[i] = new int[GlobalConst.BORDER_SIZE];
+            }
+            _evaluate = new Evaluate(this);
+            _maxMin = new MaxMin(this);
+            ReInitCellStatusAndPosGole();
+        }
 
-                for (var j = 0; j < cellStatusArr[i].Length; j++)
+        private void ReInitCellStatusAndPosGole()
+        {
+            for (var i = 0; i < GlobalConst.BORDER_SIZE; i++)
+            {
+                for (var j = 0; j < GlobalConst.BORDER_SIZE; j++)
                 {
-                    blackPosGoles[i][j] = 0;
-                    whitePosGoles[i][j] = 0;
-                    cellStatusArr[i][j] = CellStatus.Empty;
+                    _cellStatusArr[i][j] = CellStatus.Empty;
                 }
             }
-            evaluate = new Evaluate(this);
+            for (var i = 0; i < GlobalConst.BORDER_SIZE; i++)
+            {
+                for (var j = 0; j < GlobalConst.BORDER_SIZE; j++)
+                {
+                    int blackGole, whiteGole;
+                    _evaluate.GenePosGole(new Pos(i, j), out blackGole, out whiteGole);
+                    _blackPosGoles[i][j] = blackGole;
+                    _whitePosGoles[i][j] = whiteGole;
+                }
+            }
         }
 
         #region 读取位置棋子状态
         public CellStatus GetCellStatus(Pos pos)
         {
-            return cellStatusArr[pos.X][pos.Y];
+            return _cellStatusArr[pos.X][pos.Y];
         }
 
         public CellStatus GetCellStatus(int x, int y)
         {
-            return cellStatusArr[x][y];
+            return _cellStatusArr[x][y];
         }
         #endregion
 
+        #region 计算得分
         public int GetBlackPosGole(Pos pos)
         {
-            return blackPosGoles[pos.X][pos.Y];
+            return _blackPosGoles[pos.X][pos.Y];
         }
 
         public int GetBlackPosGole(int x, int y)
         {
-            return blackPosGoles[x][y];
+            return _blackPosGoles[x][y];
         }
 
         public int GetWhitePosGole(Pos pos)
         {
-            return whitePosGoles[pos.X][pos.Y];
+            return _whitePosGoles[pos.X][pos.Y];
         }
 
         public int GetWhitePosGole(int x, int y)
         {
-            return whitePosGoles[x][y];
+            return _whitePosGoles[x][y];
+        }
+
+        public int GetRoleGole(CellStatus curStatus)
+        {
+            var blackMax = 0;
+            var whiteMax = 0;
+            for (var i = 0; i < GlobalConst.BORDER_SIZE; i++)
+            {
+                for (var j = 0; j < GlobalConst.BORDER_SIZE; j++)
+                {
+                    blackMax = Math.Max(blackMax, _blackPosGoles[i][j]);
+                    whiteMax = Math.Max(whiteMax, _whitePosGoles[i][j]);
+                }
+            }
+
+            switch (curStatus)
+            {
+                case CellStatus.Black:
+                    return blackMax * 25 - whiteMax;
+                case CellStatus.White:
+                    return whiteMax * 25 - blackMax;
+            }
+            return 0;
+        }
+        #endregion
+
+        public void AutoPutChess(CellStatus curstatus)
+        {
+            PutChess(_maxMin.FindBestPos(curstatus), curstatus);
         }
 
         /// <summary>
@@ -75,16 +124,15 @@ namespace wzq_ai
         /// <returns></returns>
         public bool PutChess(Pos pos, CellStatus cellStatus)
         {
-            if (cellStatusArr[pos.X][pos.Y] != CellStatus.Empty)
+            if (_cellStatusArr[pos.X][pos.Y] != CellStatus.Empty)
             {
                 return false;
             }
-            cellStatusArr[pos.X][pos.Y] = cellStatus;
+            _cellStatusArr[pos.X][pos.Y] = cellStatus;
 
-            stepStack.Push(pos);
+            _stepStack.Push(pos);
 
             UpdateAffectPosScore(pos);
-
             return true;
         }
 
@@ -94,16 +142,25 @@ namespace wzq_ai
         /// <returns></returns>
         public bool UnPutChess()
         {
-            var pos = stepStack.Pop();
-            if (cellStatusArr[pos.X][pos.Y] == CellStatus.Empty)
+            if (!_stepStack.Any())
             {
                 return false;
             }
-            cellStatusArr[pos.X][pos.Y] = CellStatus.Empty;
-
+            var pos = _stepStack.Pop();
+            _cellStatusArr[pos.X][pos.Y] = CellStatus.Empty;
             UpdateAffectPosScore(pos);
-
             return true;
+        }
+
+        public void ClearChess()
+        {
+            _stepStack.Clear();
+            ReInitCellStatusAndPosGole();
+        }
+
+        public bool CheckGameOver(Pos pos)
+        {
+            return _evaluate.CheckGameOver(pos);
         }
 
         /// <summary>
@@ -112,7 +169,7 @@ namespace wzq_ai
         /// <returns></returns>
         public int MinX()
         {
-            return stepStack.Min(pos => pos.X);
+            return _stepStack.Min(pos => pos.X);
         }
 
         /// <summary>
@@ -121,7 +178,7 @@ namespace wzq_ai
         /// <returns></returns>
         public int MaxX()
         {
-            return stepStack.Max(pos => pos.X);
+            return _stepStack.Max(pos => pos.X);
         }
 
         /// <summary>
@@ -130,7 +187,7 @@ namespace wzq_ai
         /// <returns></returns>
         public int MinY()
         {
-            return stepStack.Min(pos => pos.Y);
+            return _stepStack.Min(pos => pos.Y);
         }
 
         /// <summary>
@@ -139,44 +196,33 @@ namespace wzq_ai
         /// <returns></returns>
         public int MaxY()
         {
-            return stepStack.Max(pos => pos.Y);
+            return _stepStack.Max(pos => pos.Y);
         }
 
         private void UpdateAffectPosScore(Pos pos)
         {
-            for (var i = pos.X - 4; i < pos.X + 4; i++)
+            var xMin = Math.Max(pos.X - 4, 0);
+            var xMax = Math.Min(pos.X + 4, GlobalConst.BORDER_SIZE);
+            var yMin = Math.Max(pos.Y - 4, 0);
+            var yMax = Math.Min(pos.Y + 4, GlobalConst.BORDER_SIZE);
+
+            for (var i = xMin; i < xMax; i++)
             {
-                for (var j = pos.Y - 4; j < pos.Y + 4; j++)
+                for (var j = yMin; j < yMax; j++)
                 {
                     //和pos不能连成五子的不需要updateScore
-                    if (i != pos.X 
-                        && j != pos.Y 
-                        && Math.Abs(i-pos.X) != Math.Abs(j - pos.Y))
+                    if (i != pos.X
+                        && j != pos.Y
+                        && Math.Abs(i - pos.X) != Math.Abs(j - pos.Y))
                     {
                         continue;
                     }
                     int blackGole, whiteGole;
-                    evaluate.GenePosGole(new Pos(i, j), out blackGole, out whiteGole);
-                    blackPosGoles[i][j] = blackGole;
-                    whitePosGoles[i][j] = whiteGole;
+                    _evaluate.GenePosGole(new Pos(i, j), out blackGole, out whiteGole);
+                    _blackPosGoles[i][j] = blackGole;
+                    _whitePosGoles[i][j] = whiteGole;
                 }
             }
-        }
-    }
-
-    public class SortByX : IComparer<Pos>
-    {
-        public int Compare(Pos x, Pos y)
-        {
-            return x.X != y.X ? x.X - y.X : x.Y - y.Y;
-        }
-    }
-
-    public class SortByY : IComparer<Pos>
-    {
-        public int Compare(Pos x, Pos y)
-        {
-            return x.Y != y.Y ? x.Y - y.Y : x.X - y.X;
         }
     }
 }

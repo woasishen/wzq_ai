@@ -49,12 +49,12 @@ namespace wzq_ai
     public class GolePos
     {
         public int Gole { get; private set; }
-        public Stack<Pos> PosStack { get; private set; }
+        public Pos Pos { get; private set; }
 
-        public GolePos(int gole, Stack<Pos> posStack)
+        public GolePos(int gole, Pos pos)
         {
             Gole = gole;
-            PosStack = posStack;
+            Pos = pos;
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace wzq_ai
@@ -6,28 +7,28 @@ namespace wzq_ai
     public class Neighbor
     {
         private const int SEARCH_RANGE = 2;
-        private readonly Border border;
+        private readonly Border _border;
         public Neighbor(Border border)
         {
-            this.border = border;
+            _border = border;
         }
 
         public List<Pos> GenPossiblePos(CellStatus curStatus)
         {
-            List<Pos> five = new List<Pos>();
-            List<Pos> doubleFour = new List<Pos>();
+            var five = new List<Pos>();
+            var doubleFour = new List<Pos>();
             var neighbors = GetNeighbors();
 
             foreach (var neighbor in neighbors)
             {
-                var blackGole = border.GetBlackPosGole(neighbor);
-                var whiteGole = border.GetWhitePosGole(neighbor);
+                var blackGole = _border.GetBlackPosGole(neighbor);
+                var whiteGole = _border.GetWhitePosGole(neighbor);
                 if (blackGole >= Evaluate.GOLE_DICT[5] || whiteGole >= Evaluate.GOLE_DICT[5])
                 {
                     five.Add(neighbor);
                     continue;
                 }
-                if (blackGole >= 2 * Evaluate.GOLE_DICT[4] || whiteGole >= Evaluate.GOLE_DICT[4])
+                if (blackGole >= 2 * Evaluate.GOLE_DICT[4] || whiteGole >= 2 * Evaluate.GOLE_DICT[4])
                 {
                     doubleFour.Add(neighbor);
                 }
@@ -45,16 +46,16 @@ namespace wzq_ai
 
         private List<Pos> GetNeighbors()
         {
-            var minX = border.MinX() - SEARCH_RANGE;
-            var maxX = border.MaxX() + SEARCH_RANGE;
-            var minY = border.MinY() - SEARCH_RANGE;
-            var maxY = border.MaxY() + SEARCH_RANGE;
+            var minX = Math.Max(_border.MinX() - SEARCH_RANGE, 0);
+            var maxX = Math.Min(_border.MaxX() + SEARCH_RANGE, GlobalConst.BORDER_SIZE);
+            var minY = Math.Max(_border.MinY() - SEARCH_RANGE, 0);
+            var maxY = Math.Min(_border.MaxY() + SEARCH_RANGE, GlobalConst.BORDER_SIZE);
             var result = new List<Pos>();
             for (var i = minX; i < maxX; i++)
             {
                 for (var j = minY; j < maxY; j++)
                 {
-                    if (border.GetBlackPosGole(i, j) + border.GetWhitePosGole(i, j) >
+                    if (_border.GetBlackPosGole(i, j) + _border.GetWhitePosGole(i, j) >
                         Evaluate.GOLE_DICT[2] * 2)
                     {
                         result.Add(new Pos(i, j));

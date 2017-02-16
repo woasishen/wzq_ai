@@ -16,14 +16,14 @@ namespace wzq_ai
             {5,6250000 }
         };
 
-        private readonly Border border;
-        private readonly List<Pos[]> posLineArr = new List<Pos[]>(); //所有可能的5连格
-        private readonly Dictionary<Pos, List<Pos[]>> posContainersDict = 
+        private readonly Border _border;
+        private readonly List<Pos[]> _posLineArr = new List<Pos[]>(); //所有可能的5连格
+        private readonly Dictionary<Pos, List<Pos[]>> _posContainersDict = 
             new Dictionary<Pos, List<Pos[]>>();//包含特定位置的所有5连格
 
         public Evaluate(Border border)
         {
-            this.border = border;
+            _border = border;
 
             //横的5连
             AddDirectPos(
@@ -53,15 +53,15 @@ namespace wzq_ai
                 5, 
                 (x, y) => new Pos(GlobalConst.BORDER_SIZE - x - 1, y));
 
-            foreach (var posLine in posLineArr)
+            foreach (var posLine in _posLineArr)
             {
                 foreach (var pos in posLine)
                 {
-                    if (!posContainersDict.ContainsKey(pos))
+                    if (!_posContainersDict.ContainsKey(pos))
                     {
-                        posContainersDict[pos] = new List<Pos[]>();
+                        _posContainersDict[pos] = new List<Pos[]>();
                     }
-                    posContainersDict[pos].Add(posLine);
+                    _posContainersDict[pos].Add(posLine);
                 }
             }
         }
@@ -69,19 +69,32 @@ namespace wzq_ai
         public void GenePosGole(Pos pos, out int black, out int white)
         {
             black = white = 0;
-            if (border.GetCellStatus(pos) != CellStatus.Empty)
+            if (_border.GetCellStatus(pos) != CellStatus.Empty)
             {
                 return;
             }
-            foreach (var line in posContainersDict[pos])
+            foreach (var line in _posContainersDict[pos])
             {
                 UpdatePosLineGole(line, ref black, ref white);
             }
         }
 
+        public bool CheckGameOver(Pos pos)
+        {
+            foreach (var line in _posContainersDict[pos])
+            {
+                var result = line.Sum(p => (int)_border.GetCellStatus(p));
+                if (result == 5 || result == 50)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private void UpdatePosLineGole(Pos[] posLine, ref int black,ref int white)
         {
-            var result = posLine.Sum(p => (int) border.GetCellStatus(p));
+            var result = posLine.Sum(p => (int) _border.GetCellStatus(p));
             //不含白子
             if (result < 10)
             {
@@ -105,21 +118,21 @@ namespace wzq_ai
                     {
                         tempPos[k] = genPos(i, j + k);
                     }
-                    posLineArr.Add(tempPos);
+                    _posLineArr.Add(tempPos);
                 }
             }
         }
 
         private void AddDiagonalPos(int width, int height, int length, Func<int, int, Pos> genPos)
         {
-            AddDiagonalPosOneLine(0, 0, width, height, length, posLineArr, genPos);
+            AddDiagonalPosOneLine(0, 0, width, height, length, _posLineArr, genPos);
             for (var i = 1; i < width; i++)
             {
-                AddDiagonalPosOneLine(i, 0, width, height, length, posLineArr, genPos);
+                AddDiagonalPosOneLine(i, 0, width, height, length, _posLineArr, genPos);
             }
             for (var i = 1; i < height; i++)
             {
-                AddDiagonalPosOneLine(0, i, width, height, length, posLineArr, genPos);
+                AddDiagonalPosOneLine(0, i, width, height, length, _posLineArr, genPos);
             }
         }
 
