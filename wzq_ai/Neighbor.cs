@@ -15,31 +15,20 @@ namespace wzq_ai
 
         public List<Pos> GenPossiblePos(CellStatus curStatus)
         {
-            var five = new List<Pos>();
-            var doubleFour = new List<Pos>();
             var neighbors = GetNeighbors();
 
-            foreach (var neighbor in neighbors)
+            neighbors.Sort(
+                (i, j) => 
+                _border.GetBlackPosGole(j) + 
+                _border.GetWhitePosGole(j) - 
+                _border.GetBlackPosGole(i) - 
+                _border.GetWhitePosGole(i));
+            var tempDict = new Dictionary<Pos, int>();
+            for (int i = 0; i < neighbors.Count; i++)
             {
-                var blackGole = _border.GetBlackPosGole(neighbor);
-                var whiteGole = _border.GetWhitePosGole(neighbor);
-                if (blackGole >= Evaluate.GOLE_DICT[5] || whiteGole >= Evaluate.GOLE_DICT[5])
-                {
-                    five.Add(neighbor);
-                    continue;
-                }
-                if (blackGole >= 2 * Evaluate.GOLE_DICT[4] || whiteGole >= 2 * Evaluate.GOLE_DICT[4])
-                {
-                    doubleFour.Add(neighbor);
-                }
-            }
-            if (five.Any())
-            {
-                return five;
-            }
-            if (doubleFour.Any())
-            {
-                return doubleFour;
+                var blackGole = _border.GetBlackPosGole(neighbors[i]);
+                var whiteGole = _border.GetWhitePosGole(neighbors[i]);
+                tempDict[neighbors[i]] = blackGole + whiteGole;
             }
             return neighbors;
         }
