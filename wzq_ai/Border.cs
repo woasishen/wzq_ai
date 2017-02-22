@@ -14,37 +14,42 @@ namespace wzq_ai
         private readonly int[][] _blackPosGoles;
         private readonly int[][] _whitePosGoles;
 
+        public Action<int, TimeSpan> ComputeFinished;
         public Pos LastStepPos => _stepStack.Peek();
+        public int StepIndex => _stepStack.Count;
 
         public Border()
         {
-            _cellStatusArr = new CellStatus[GlobalConst.BORDER_SIZE][];
-            _blackPosGoles = new int[GlobalConst.BORDER_SIZE][];
-            _whitePosGoles = new int[GlobalConst.BORDER_SIZE][];
+            _cellStatusArr = new CellStatus[Configs.BORDER_SIZE][];
+            _blackPosGoles = new int[Configs.BORDER_SIZE][];
+            _whitePosGoles = new int[Configs.BORDER_SIZE][];
 
-            for (var i = 0; i < GlobalConst.BORDER_SIZE; i++)
+            for (var i = 0; i < Configs.BORDER_SIZE; i++)
             {
-                _cellStatusArr[i] = new CellStatus[GlobalConst.BORDER_SIZE];
-                _blackPosGoles[i] = new int[GlobalConst.BORDER_SIZE];
-                _whitePosGoles[i] = new int[GlobalConst.BORDER_SIZE];
+                _cellStatusArr[i] = new CellStatus[Configs.BORDER_SIZE];
+                _blackPosGoles[i] = new int[Configs.BORDER_SIZE];
+                _whitePosGoles[i] = new int[Configs.BORDER_SIZE];
             }
             _evaluate = new Evaluate(this);
-            _maxMin = new MaxMin(this);
+            _maxMin = new MaxMin(this)
+            {
+                ComputeFinished = (i, span) => { ComputeFinished(i, span); }
+            };
             ReInitCellStatusAndPosGole();
         }
 
         private void ReInitCellStatusAndPosGole()
         {
-            for (var i = 0; i < GlobalConst.BORDER_SIZE; i++)
+            for (var i = 0; i < Configs.BORDER_SIZE; i++)
             {
-                for (var j = 0; j < GlobalConst.BORDER_SIZE; j++)
+                for (var j = 0; j < Configs.BORDER_SIZE; j++)
                 {
                     _cellStatusArr[i][j] = CellStatus.Empty;
                 }
             }
-            for (var i = 0; i < GlobalConst.BORDER_SIZE; i++)
+            for (var i = 0; i < Configs.BORDER_SIZE; i++)
             {
-                for (var j = 0; j < GlobalConst.BORDER_SIZE; j++)
+                for (var j = 0; j < Configs.BORDER_SIZE; j++)
                 {
                     int blackGole, whiteGole;
                     _evaluate.GenePosGole(new Pos(i, j), out blackGole, out whiteGole);
@@ -91,9 +96,9 @@ namespace wzq_ai
         {
             var blackMax = 0;
             var whiteMax = 0;
-            for (var i = 0; i < GlobalConst.BORDER_SIZE; i++)
+            for (var i = 0; i < Configs.BORDER_SIZE; i++)
             {
-                for (var j = 0; j < GlobalConst.BORDER_SIZE; j++)
+                for (var j = 0; j < Configs.BORDER_SIZE; j++)
                 {
                     blackMax = Math.Max(blackMax, _blackPosGoles[i][j]);
                     whiteMax = Math.Max(whiteMax, _whitePosGoles[i][j]);
@@ -202,9 +207,9 @@ namespace wzq_ai
         private void UpdateAffectPosScore(Pos pos)
         {
             var xMin = Math.Max(pos.X - 4, 0);
-            var xMax = Math.Min(pos.X + 4, GlobalConst.BORDER_SIZE);
+            var xMax = Math.Min(pos.X + 4, Configs.BORDER_SIZE);
             var yMin = Math.Max(pos.Y - 4, 0);
-            var yMax = Math.Min(pos.Y + 4, GlobalConst.BORDER_SIZE);
+            var yMax = Math.Min(pos.Y + 4, Configs.BORDER_SIZE);
 
             for (var i = xMin; i < xMax; i++)
             {

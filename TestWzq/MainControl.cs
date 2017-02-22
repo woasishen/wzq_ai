@@ -43,7 +43,7 @@ namespace TestWzq
         private readonly Border _border;
 
         public bool AutoCompute { get; set; }
-
+        public Action<int, TimeSpan> ComputeFinished;
         public Action StepStatusChanged { set; get; }
 
         public void GeneNextStep()
@@ -53,6 +53,8 @@ namespace TestWzq
                 return;
             }
             _border.AutoPutChess(CurStatus);
+            Refresh();
+            CurStatus = CellStatusHelper.Not(CurStatus);
         }
 
         public void Redo()
@@ -78,15 +80,18 @@ namespace TestWzq
         {
             InitializeComponent();
             ReInitCellSize();
-            _border = new Border();
+            _border = new Border
+            {
+                ComputeFinished = (i, span) => { ComputeFinished(i, span); }
+            };
         }
 
         private void ReInitCellSize()
         {
             _cellWStep = ((float)ClientSize.Width - Padding.Left - Padding.Right)
-                / (GlobalConst.BORDER_SIZE - 1);
+                / (Configs.BORDER_SIZE - 1);
             _cellHStep = ((float)ClientSize.Height - Padding.Top - Padding.Bottom)
-                / (GlobalConst.BORDER_SIZE - 1);
+                / (Configs.BORDER_SIZE - 1);
             _itemDiameter = Math.Min(_cellWStep, _cellHStep) * ITEM_SIZE_SCALE;
         }
 
@@ -114,7 +119,7 @@ namespace TestWzq
                     Alignment = StringAlignment.Far,
                     LineAlignment = StringAlignment.Far
                 });
-            for (var i = 1; i < GlobalConst.BORDER_SIZE; i++)
+            for (var i = 1; i < Configs.BORDER_SIZE; i++)
             {
                 g.DrawString(
                     i.ToString(),
@@ -131,7 +136,7 @@ namespace TestWzq
                         LineAlignment = StringAlignment.Far
                     });
             }
-            for (var i = 1; i < GlobalConst.BORDER_SIZE; i++)
+            for (var i = 1; i < Configs.BORDER_SIZE; i++)
             {
                 g.DrawString(
                     i.ToString(),
@@ -156,7 +161,7 @@ namespace TestWzq
             {
                 return;
             }
-            for (var i = 0; i < GlobalConst.BORDER_SIZE; i++)
+            for (var i = 0; i < Configs.BORDER_SIZE; i++)
             {
                 g.DrawLine(_linePen,
                     i * _cellWStep + Padding.Left,
@@ -164,7 +169,7 @@ namespace TestWzq
                     i * _cellWStep + Padding.Left,
                     ClientSize.Height - Padding.Bottom);
             }
-            for (var i = 0; i < GlobalConst.BORDER_SIZE; i++)
+            for (var i = 0; i < Configs.BORDER_SIZE; i++)
             {
                 g.DrawLine(_linePen,
                     Padding.Left,
@@ -176,9 +181,9 @@ namespace TestWzq
 
         private void DrawCells(Graphics g)
         {
-            for (var i = 0; i < GlobalConst.BORDER_SIZE; i++)
+            for (var i = 0; i < Configs.BORDER_SIZE; i++)
             {
-                for (var j = 0; j < GlobalConst.BORDER_SIZE; j++)
+                for (var j = 0; j < Configs.BORDER_SIZE; j++)
                 {
                     if (_border.GetCellStatus(i, j) == CellStatus.Empty)
                     {
@@ -244,7 +249,7 @@ namespace TestWzq
             var x = (int)Math.Round((e.X - Padding.Left) / _cellWStep);
             var y = (int)Math.Round((e.Y - Padding.Top) / _cellHStep);
             if (x < 0 || y < 0 
-                || x > GlobalConst.BORDER_SIZE || y > GlobalConst.BORDER_SIZE 
+                || x > Configs.BORDER_SIZE || y > Configs.BORDER_SIZE 
                 || _border.GetCellStatus(x ,y) != CellStatus.Empty)
             {
                 return;

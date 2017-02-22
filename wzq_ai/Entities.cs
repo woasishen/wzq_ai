@@ -57,9 +57,4 @@ namespace wzq_ai
             Pos = pos;
         }
     }
-
-    public class GlobalConst
-    {
-        public const int BORDER_SIZE = 15;
-    }
 }

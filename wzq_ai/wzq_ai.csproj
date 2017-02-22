@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Border.cs" />
+    <Compile Include="Configs.cs" />
     <Compile Include="Entities.cs" />
     <Compile Include="Evaluate.cs" />
     <Compile Include="MaxMin.cs" />

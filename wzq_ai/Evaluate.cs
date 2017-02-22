@@ -27,31 +27,31 @@ namespace wzq_ai
 
             //横的5连
             AddDirectPos(
-                GlobalConst.BORDER_SIZE,
-                GlobalConst.BORDER_SIZE, 
+                Configs.BORDER_SIZE,
+                Configs.BORDER_SIZE, 
                 5, 
                 (y, x) => new Pos(x, y));
 
             //竖的5连
             AddDirectPos(
-                GlobalConst.BORDER_SIZE, 
-                GlobalConst.BORDER_SIZE, 
+                Configs.BORDER_SIZE, 
+                Configs.BORDER_SIZE, 
                 5,
                 (x, y) => new Pos(x, y));
 
             //正对角的5连
             AddDiagonalPos(
-                GlobalConst.BORDER_SIZE,
-                GlobalConst.BORDER_SIZE, 
+                Configs.BORDER_SIZE,
+                Configs.BORDER_SIZE, 
                 5, 
                 (x, y) => new Pos(x, y));
 
             //反对角的5连
             AddDiagonalPos(
-                GlobalConst.BORDER_SIZE,
-                GlobalConst.BORDER_SIZE,
+                Configs.BORDER_SIZE,
+                Configs.BORDER_SIZE,
                 5, 
-                (x, y) => new Pos(GlobalConst.BORDER_SIZE - x - 1, y));
+                (x, y) => new Pos(Configs.BORDER_SIZE - x - 1, y));
 
             foreach (var posLine in _posLineArr)
             {

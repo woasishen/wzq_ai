@@ -12,6 +12,16 @@ namespace TestWzq
         {
             InitializeComponent();
             mainControl.StepStatusChanged = UpdateGoleText;
+            mainControl.ComputeFinished = (i, span) =>
+            {
+                computeTimesLabel.Text = span.ToString();
+                timeLabel.Text = i.ToString();
+            };
+            Configs.LogMsg += s =>
+            {
+                logRichTextBox.AppendText(s);
+                logRichTextBox.AppendText(Environment.NewLine);
+            };
         }
 
         private void computeBtn_Click(object sender, EventArgs e)
