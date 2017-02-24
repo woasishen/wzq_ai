@@ -10,6 +10,7 @@ namespace wzq_ai
         private readonly Neighbor _neighbor;
         private readonly Random _random;
         private int _computeTimes;
+        private int _abCut;
         public Action<int, TimeSpan> ComputeFinished;
 
         public MaxMin(Border border)
@@ -22,6 +23,7 @@ namespace wzq_ai
         public Pos FindBestPos(CellStatus curStatus)
         {
             _computeTimes = 0;
+            _abCut = 0;
             var tempTime = DateTime.Now;
             var maxGolePosList = new List<Pos>();
             var maxGole = int.MinValue;
@@ -32,8 +34,8 @@ namespace wzq_ai
                 var tempGole = -ComputeMaxMin(
                     CellStatusHelper.Not(curStatus), 
                     1, 
-                    int.MinValue, 
-                    int.MaxValue);
+                    int.MinValue,
+                    -maxGole);
                 _border.UnPutChess();
                 if (tempGole == maxGole)
                 {
@@ -50,6 +52,7 @@ namespace wzq_ai
             var index = _random.Next(maxGolePosList.Count);
             ComputeFinished.Invoke(_computeTimes, DateTime.Now - tempTime);
 
+            Configs.LogMsg($"搜索完成，共递归{_computeTimes}次，ab剪枝{_abCut}次");
             return maxGolePosList[index];
         }
 
@@ -69,13 +72,23 @@ namespace wzq_ai
                 if (tempGole < Evaluate.GOLE_DICT[5] && deep < Configs.DEPTH)
                 {
                     _border.PutChess(neighbors[i], curStatus);
-                    tempGole = -ComputeMaxMin(CellStatusHelper.Not(curStatus), deep + 1);
+                    tempGole = -ComputeMaxMin(
+                        CellStatusHelper.Not(curStatus), 
+                        deep + 1, 
+                        -beta,
+                        -maxGole);
                     _border.UnPutChess();
                 }
                 if (tempGole >= Evaluate.GOLE_DICT[5])
                 {
                     return tempGole;
                 }
+                if (tempGole >= beta)
+                {
+                    _abCut++;
+                    return tempGole;
+                }
+
                 maxGole = Math.Max(maxGole, tempGole);
             }
             return maxGole;
