@@ -31,9 +31,10 @@ namespace wzq_ai
             var neighbors = _neighbor.GenPossiblePos(curStatus);
             foreach (Pos pos in neighbors)
             {
-                _border.PutChess(pos, curStatus);
-                var tempGole = (int)Math.Pow(-1, Configs.DEPTH - 1) * ComputeMaxMin(0, CellStatusHelper.Not(curStatus));
-                _border.UnPutChess();
+                _border.PutChess(pos, curStatus, Configs.SHOW_STEP);
+                var tempGole = Math.Sign(Math.Pow(-1, Configs.DEPTH - 1)) * 
+                    ComputeMaxMin(0, CellStatusHelper.Not(curStatus));
+                _border.UnPutChess(Configs.SHOW_STEP);
                 if (tempGole == maxGole)
                 {
                     maxGolePosList.Add(pos);
@@ -66,13 +67,17 @@ namespace wzq_ai
 
             for (var i = 0; i < neighbors.Count; i++)
             {
-                _border.PutChess(neighbors[i], curStatus);
+                if (_border.PutChess(neighbors[i], curStatus, Configs.SHOW_STEP))
+                {
+                    _border.UnPutChess(Configs.SHOW_STEP);
+                    return Math.Sign(Math.Pow(-1, Configs.DEPTH - deep)) * int.MaxValue;
+                }
                 var tempGole = ComputeMaxMin(
                     deep + 1,
                     CellStatusHelper.Not(curStatus),
                     isMaxLayer ? int.MinValue : best,
                     isMaxLayer ? best : int.MaxValue);
-                _border.UnPutChess();
+                _border.UnPutChess(Configs.SHOW_STEP);
                 if (best == null)
                 {
                     best = tempGole;

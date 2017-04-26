@@ -11,6 +11,8 @@ namespace wzq_ai
         public const int DEPTH = 4;
         public const int BORDER_SIZE = 15;
 
+        public const bool SHOW_STEP = true;
+
         public static Action<string> LogMsg;
     }
 }

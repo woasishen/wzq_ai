@@ -7,7 +7,7 @@ namespace wzq_ai
 {
     public class Border
     {
-        private const int STATUS_MUL = 3;
+        private const int STATUS_MUL = 4;
         private readonly CellStatus[][] _cellStatusArr;
         private readonly Stack<Pos> _stepStack = new Stack<Pos>();
 
@@ -17,8 +17,10 @@ namespace wzq_ai
         private readonly int[][] _whitePosGoles;
 
         public Action<int, TimeSpan> ComputeFinished;
+        public Action ChessChanged;
         public Pos LastStepPos => _stepStack.Peek();
         public int StepIndex => _stepStack.Count;
+        public bool GameOver;
 
         public Border()
         {
@@ -79,9 +81,9 @@ namespace wzq_ai
             switch (curStatus)
             {
                 case CellStatus.Black:
-                    return _blackPosGoles[x][y] + _whitePosGoles[x][y] * STATUS_MUL;
-                case CellStatus.White:
                     return _blackPosGoles[x][y] * STATUS_MUL + _whitePosGoles[x][y];
+                case CellStatus.White:
+                    return _blackPosGoles[x][y] + _whitePosGoles[x][y] * STATUS_MUL;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(curStatus), curStatus, null);
             }
@@ -89,25 +91,26 @@ namespace wzq_ai
 
         public int GetRoleGole(CellStatus curStatus)
         {
-            var blackMax = 0;
-            var whiteMax = 0;
+            var totalBlack = 0;
+            var totalWhite = 0;
+
             for (var i = 0; i < Configs.BORDER_SIZE; i++)
             {
                 for (var j = 0; j < Configs.BORDER_SIZE; j++)
                 {
-                    blackMax = Math.Max(blackMax, _blackPosGoles[i][j]);
-                    whiteMax = Math.Max(whiteMax, _whitePosGoles[i][j]);
+                    totalBlack += _blackPosGoles[i][j];
+                    totalWhite += _whitePosGoles[i][j];
                 }
             }
-
             switch (curStatus)
             {
                 case CellStatus.Black:
-                    return blackMax * STATUS_MUL - whiteMax;
+                    return totalBlack * STATUS_MUL - totalWhite;
                 case CellStatus.White:
-                    return whiteMax * STATUS_MUL - blackMax;
+                    return totalWhite * STATUS_MUL - totalBlack;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(curStatus), curStatus, null);
             }
-            return 0;
         }
         #endregion
 
@@ -121,8 +124,9 @@ namespace wzq_ai
         /// </summary>
         /// <param name="pos"></param>
         /// <param name="cellStatus"></param>
+        /// <param name="needRefresh"></param>
         /// <returns></returns>
-        public bool PutChess(Pos pos, CellStatus cellStatus)
+        public bool PutChess(Pos pos, CellStatus cellStatus, bool needRefresh = true)
         {
             if (_cellStatusArr[pos.X][pos.Y] != CellStatus.Empty)
             {
@@ -133,22 +137,32 @@ namespace wzq_ai
             _stepStack.Push(pos);
 
             UpdateAffectPosScore(pos);
-            return _evaluate.CheckGameOver(pos);
+            GameOver = _evaluate.CheckGameOver(pos);
+            if (needRefresh)
+            {
+                ChessChanged.Invoke();
+            }
+            return GameOver;
         }
 
         /// <summary>
         /// 悔棋
         /// </summary>
         /// <returns></returns>
-        public bool UnPutChess()
+        public bool UnPutChess(bool needRefresh = true)
         {
             if (!_stepStack.Any())
             {
                 return false;
             }
+            GameOver = false;
             var pos = _stepStack.Pop();
             _cellStatusArr[pos.X][pos.Y] = CellStatus.Empty;
             UpdateAffectPosScore(pos);
+            if (needRefresh)
+            {
+                ChessChanged.Invoke();
+            }
             return true;
         }
 
@@ -157,8 +171,10 @@ namespace wzq_ai
         /// </summary>
         public void ClearChess()
         {
+            GameOver = false;
             _stepStack.Clear();
             ReInitCellStatusAndPosGole();
+            ChessChanged.Invoke();
         }
 
         private void UpdateAffectPosScore(Pos pos)

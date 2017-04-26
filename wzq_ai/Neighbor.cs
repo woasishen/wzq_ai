@@ -7,7 +7,6 @@ namespace wzq_ai
 {
     public class Neighbor
     {
-        private const int SEARCH_RANGE = 2;
         private readonly Border _border;
         public Neighbor(Border border)
         {

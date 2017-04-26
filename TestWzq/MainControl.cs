@@ -17,7 +17,6 @@ namespace TestWzq
                 {CellStatus.White, new SolidBrush(Color.White)}
             };
 
-        private bool _gameOver;
         private float _cellWStep;
         private float _cellHStep;
         private float _itemDiameter;
@@ -32,8 +31,8 @@ namespace TestWzq
         {
             private set
             {
-                StepStatusChanged.Invoke();
                 _curStatus = value;
+                StepStatusChanged.Invoke();
             }
             get { return _curStatus; }
         }
@@ -48,14 +47,13 @@ namespace TestWzq
 
         public void GeneNextStep()
         {
-            if (_gameOver)
+            if (_border.GameOver)
             {
                 return;
             }
             var pos = _border.FindBestPos(CurStatus);
-            _gameOver = _border.PutChess(pos, CurStatus);
+            _border.PutChess(pos, CurStatus);
             CurStatus = CellStatusHelper.Not(CurStatus);
-            Refresh();
         }
 
         public void Redo()
@@ -65,16 +63,17 @@ namespace TestWzq
                 return;
             }
             CurStatus = CellStatusHelper.Not(CurStatus);
-            _gameOver = false;
-            Refresh();
         }
 
         public void RestartGame()
         {
             _border.ClearChess();
             CurStatus = CellStatus.Black;
-            _gameOver = false;
-            Refresh();
+        }
+
+        public int GetRoleGole()
+        {
+            return _border.GetRoleGole(CurStatus);
         }
 
         public MainControl()
@@ -83,7 +82,8 @@ namespace TestWzq
             ReInitCellSize();
             _border = new Border
             {
-                ComputeFinished = (i, span) => { ComputeFinished(i, span); }
+                ComputeFinished = (i, span) => ComputeFinished(i, span),
+                ChessChanged = () => Refresh()
             };
         }
 
@@ -158,7 +158,7 @@ namespace TestWzq
 
         private void DrawLines(Graphics g)
         {
-            if (_gameOver)
+            if (_border.GameOver)
             {
                 return;
             }
@@ -215,7 +215,7 @@ namespace TestWzq
 
         private void DrawGameOver(Graphics g)
         {
-            if (!_gameOver)
+            if (!_border.GameOver)
             {
                 return;
             }
@@ -243,7 +243,7 @@ namespace TestWzq
 
         private void MainControl_MouseClick(object sender, MouseEventArgs e)
         {
-            if (_gameOver)
+            if (_border.GameOver)
             {
                 return;
             }
@@ -256,9 +256,8 @@ namespace TestWzq
                 return;
             }
             var pos = new Pos(x, y);
-            _gameOver = _border.PutChess(pos, CurStatus);
+            _border.PutChess(pos, CurStatus);
             CurStatus = CellStatusHelper.Not(CurStatus);
-            Refresh();
             if (AutoCompute)
             {
                 GeneNextStep();

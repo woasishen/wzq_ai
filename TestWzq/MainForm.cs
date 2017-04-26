@@ -46,24 +46,7 @@ namespace TestWzq
 
         private void UpdateGoleText()
         {
-            UpdateGoleLabel(CellStatus.Black);
-            UpdateGoleLabel(CellStatus.White);
-        }
-
-        private void UpdateGoleLabel(CellStatus cellStatus)
-        {
-            Label tempLabel;
-            switch (cellStatus)
-            {
-                case CellStatus.Black:
-                    tempLabel = blackGoleLabel;
-                    break;
-                case CellStatus.White:
-                    tempLabel = whiteGoleLabel;
-                    break;
-                default:
-                    throw new NotSupportedException();
-            }
+            totalGoleLabel.Text = mainControl.GetRoleGole().ToString();
         }
     }
 }
