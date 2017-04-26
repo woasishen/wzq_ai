@@ -25,27 +25,24 @@ namespace wzq_ai
             _computeTimes = 0;
             _abCut = 0;
             var tempTime = DateTime.Now;
+
             var maxGolePosList = new List<Pos>();
             var maxGole = int.MinValue;
             var neighbors = _neighbor.GenPossiblePos(curStatus);
-            for (var i = 0; i < neighbors.Count; i++)
+            foreach (Pos pos in neighbors)
             {
-                _border.PutChess(neighbors[i], curStatus);
-                var tempGole = -ComputeMaxMin(
-                    CellStatusHelper.Not(curStatus), 
-                    1, 
-                    int.MinValue,
-                    -maxGole);
+                _border.PutChess(pos, curStatus);
+                var tempGole = (int)Math.Pow(-1, Configs.DEPTH - 1) * ComputeMaxMin(0, CellStatusHelper.Not(curStatus));
                 _border.UnPutChess();
                 if (tempGole == maxGole)
                 {
-                    maxGolePosList.Add(neighbors[i]);
+                    maxGolePosList.Add(pos);
                 }
                 else if (tempGole > maxGole)
                 {
                     maxGolePosList.Clear();
                     maxGole = tempGole;
-                    maxGolePosList.Add(neighbors[i]);
+                    maxGolePosList.Add(pos);
                 }
             }
 
@@ -56,42 +53,47 @@ namespace wzq_ai
             return maxGolePosList[index];
         }
 
-        private int ComputeMaxMin(CellStatus curStatus, int deep, int alpha, int beta)
+        private int ComputeMaxMin(int deep, CellStatus curStatus, int? alpha = null, int? beta = null)
         {
-            if (_computeTimes % 10000 == 0)
+            if (deep == Configs.DEPTH)
             {
-                Configs.LogMsg($"递归已执行{_computeTimes}次");
+                _computeTimes++;
+                return _border.GetRoleGole(curStatus);
             }
-            _computeTimes++;
-            var maxGole = int.MinValue;
+            int? best = null;
+            var isMaxLayer = (Configs.DEPTH - deep)%2 == 1;
             var neighbors = _neighbor.GenPossiblePos(curStatus);
 
             for (var i = 0; i < neighbors.Count; i++)
             {
-                var tempGole = _border.GetRoleGole(curStatus);
-                if (tempGole < Evaluate.GOLE_DICT[5] && deep < Configs.DEPTH)
+                _border.PutChess(neighbors[i], curStatus);
+                var tempGole = ComputeMaxMin(
+                    deep + 1,
+                    CellStatusHelper.Not(curStatus),
+                    isMaxLayer ? int.MinValue : best,
+                    isMaxLayer ? best : int.MaxValue);
+                _border.UnPutChess();
+                if (best == null)
                 {
-                    _border.PutChess(neighbors[i], curStatus);
-                    tempGole = -ComputeMaxMin(
-                        CellStatusHelper.Not(curStatus), 
-                        deep + 1, 
-                        -beta,
-                        -maxGole);
-                    _border.UnPutChess();
+                    best = tempGole;
                 }
-                if (tempGole >= Evaluate.GOLE_DICT[5])
+                else
                 {
-                    return tempGole;
-                }
-                if (tempGole >= beta)
-                {
-                    _abCut++;
-                    return tempGole;
+                    best = isMaxLayer
+                        ? Math.Max(best.Value, tempGole)
+                        : Math.Min(best.Value, tempGole);
                 }
 
-                maxGole = Math.Max(maxGole, tempGole);
+                if (i != neighbors.Count - 1)
+                {
+                    if (alpha <= tempGole && tempGole <= beta)
+                    {
+                        _abCut++;
+                        return tempGole;
+                    }
+                }
             }
-            return maxGole;
+            return best ?? 0;
         }
     }
 }

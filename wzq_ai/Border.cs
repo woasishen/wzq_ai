@@ -111,9 +111,9 @@ namespace wzq_ai
         }
         #endregion
 
-        public void AutoPutChess(CellStatus curstatus)
+        public Pos FindBestPos(CellStatus curstatus)
         {
-            PutChess(_maxMin.FindBestPos(curstatus), curstatus);
+            return _maxMin.FindBestPos(curstatus);
         }
 
         /// <summary>
@@ -126,14 +126,14 @@ namespace wzq_ai
         {
             if (_cellStatusArr[pos.X][pos.Y] != CellStatus.Empty)
             {
-                return false;
+                throw new Exception("putchess not emput");
             }
             _cellStatusArr[pos.X][pos.Y] = cellStatus;
 
             _stepStack.Push(pos);
 
             UpdateAffectPosScore(pos);
-            return true;
+            return _evaluate.CheckGameOver(pos);
         }
 
         /// <summary>
@@ -161,11 +161,6 @@ namespace wzq_ai
             ReInitCellStatusAndPosGole();
         }
 
-        public bool CheckGameOver(Pos pos)
-        {
-            return _evaluate.CheckGameOver(pos);
-        }
-
         private void UpdateAffectPosScore(Pos pos)
         {
             var xMin = Math.Max(pos.X - 4, 0);
@@ -179,7 +174,7 @@ namespace wzq_ai
                 {
                     if (GetCellStatus(i, j) != CellStatus.Empty)
                     {
-                        _blackPosGoles[pos.X][pos.Y] = _whitePosGoles[pos.X][pos.Y] = 0;
+                        _blackPosGoles[i][j] = _whitePosGoles[i][j] = 0;
                         continue;
                     }
                     //和pos不能连成五子的不需要updateScore

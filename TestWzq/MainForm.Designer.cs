@@ -40,8 +40,8 @@
             this.timeLabel = new System.Windows.Forms.Label();
             this.computeTimesLabel = new System.Windows.Forms.Label();
             this.rightPanel = new System.Windows.Forms.Panel();
-            this.mainControl = new TestWzq.MainControl();
             this.logRichTextBox = new System.Windows.Forms.RichTextBox();
+            this.mainControl = new TestWzq.MainControl();
             this.bottomPanel.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             this.rightPanel.SuspendLayout();
@@ -186,6 +186,16 @@
             this.rightPanel.Size = new System.Drawing.Size(296, 533);
             this.rightPanel.TabIndex = 11;
             // 
+            // logRichTextBox
+            // 
+            this.logRichTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.logRichTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.logRichTextBox.Location = new System.Drawing.Point(0, 0);
+            this.logRichTextBox.Name = "logRichTextBox";
+            this.logRichTextBox.Size = new System.Drawing.Size(296, 533);
+            this.logRichTextBox.TabIndex = 0;
+            this.logRichTextBox.Text = "";
+            // 
             // mainControl
             // 
             this.mainControl.AutoCompute = true;
@@ -197,16 +207,6 @@
             this.mainControl.Size = new System.Drawing.Size(644, 533);
             this.mainControl.StepStatusChanged = null;
             this.mainControl.TabIndex = 9;
-            // 
-            // logRichTextBox
-            // 
-            this.logRichTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.logRichTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.logRichTextBox.Location = new System.Drawing.Point(0, 0);
-            this.logRichTextBox.Name = "logRichTextBox";
-            this.logRichTextBox.Size = new System.Drawing.Size(296, 533);
-            this.logRichTextBox.TabIndex = 0;
-            this.logRichTextBox.Text = "";
             // 
             // MainForm
             // 

@@ -52,9 +52,10 @@ namespace TestWzq
             {
                 return;
             }
-            _border.AutoPutChess(CurStatus);
-            Refresh();
+            var pos = _border.FindBestPos(CurStatus);
+            _gameOver = _border.PutChess(pos, CurStatus);
             CurStatus = CellStatusHelper.Not(CurStatus);
+            Refresh();
         }
 
         public void Redo()
@@ -255,21 +256,12 @@ namespace TestWzq
                 return;
             }
             var pos = new Pos(x, y);
-            _border.PutChess(pos, CurStatus);
+            _gameOver = _border.PutChess(pos, CurStatus);
             CurStatus = CellStatusHelper.Not(CurStatus);
-            CheckGameOver(pos);
             Refresh();
             if (AutoCompute)
             {
                 GeneNextStep();
-            }
-        }
-
-        private void CheckGameOver(Pos pos)
-        {
-            if (_border.CheckGameOver(pos))
-            {
-                _gameOver = true;
             }
         }
 
