@@ -56,5 +56,10 @@ namespace wzq_ai
             Gole = gole;
             Pos = pos;
         }
+
+        public override string ToString()
+        {
+            return $"{Pos.X},{Pos.Y},G:{Gole}";
+        }
     }
 }

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Linq;
 
 namespace wzq_ai
 {
     public class Border
     {
+        private const int STATUS_MUL = 3;
         private readonly CellStatus[][] _cellStatusArr;
         private readonly Stack<Pos> _stepStack = new Stack<Pos>();
 
@@ -72,24 +74,17 @@ namespace wzq_ai
         #endregion
 
         #region 计算得分
-        public int GetBlackPosGole(Pos pos)
+        public int GetPosGole(int x, int y, CellStatus curStatus)
         {
-            return _blackPosGoles[pos.X][pos.Y];
-        }
-
-        public int GetBlackPosGole(int x, int y)
-        {
-            return _blackPosGoles[x][y];
-        }
-
-        public int GetWhitePosGole(Pos pos)
-        {
-            return _whitePosGoles[pos.X][pos.Y];
-        }
-
-        public int GetWhitePosGole(int x, int y)
-        {
-            return _whitePosGoles[x][y];
+            switch (curStatus)
+            {
+                case CellStatus.Black:
+                    return _blackPosGoles[x][y] + _whitePosGoles[x][y] * STATUS_MUL;
+                case CellStatus.White:
+                    return _blackPosGoles[x][y] * STATUS_MUL + _whitePosGoles[x][y];
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(curStatus), curStatus, null);
+            }
         }
 
         public int GetRoleGole(CellStatus curStatus)
@@ -108,9 +103,9 @@ namespace wzq_ai
             switch (curStatus)
             {
                 case CellStatus.Black:
-                    return blackMax * 25 - whiteMax;
+                    return blackMax * STATUS_MUL - whiteMax;
                 case CellStatus.White:
-                    return whiteMax * 25 - blackMax;
+                    return whiteMax * STATUS_MUL - blackMax;
             }
             return 0;
         }
@@ -157,6 +152,9 @@ namespace wzq_ai
             return true;
         }
 
+        /// <summary>
+        /// 重新开始
+        /// </summary>
         public void ClearChess()
         {
             _stepStack.Clear();
@@ -166,42 +164,6 @@ namespace wzq_ai
         public bool CheckGameOver(Pos pos)
         {
             return _evaluate.CheckGameOver(pos);
-        }
-
-        /// <summary>
-        /// 有棋子的最小X
-        /// </summary>
-        /// <returns></returns>
-        public int MinX()
-        {
-            return _stepStack.Min(pos => pos.X);
-        }
-
-        /// <summary>
-        /// 有棋子的最大X
-        /// </summary>
-        /// <returns></returns>
-        public int MaxX()
-        {
-            return _stepStack.Max(pos => pos.X);
-        }
-
-        /// <summary>
-        /// 有棋子的最小Y
-        /// </summary>
-        /// <returns></returns>
-        public int MinY()
-        {
-            return _stepStack.Min(pos => pos.Y);
-        }
-
-        /// <summary>
-        /// 有棋子的最大Y
-        /// </summary>
-        /// <returns></returns>
-        public int MaxY()
-        {
-            return _stepStack.Max(pos => pos.Y);
         }
 
         private void UpdateAffectPosScore(Pos pos)
@@ -215,6 +177,11 @@ namespace wzq_ai
             {
                 for (var j = yMin; j < yMax; j++)
                 {
+                    if (GetCellStatus(i, j) != CellStatus.Empty)
+                    {
+                        _blackPosGoles[pos.X][pos.Y] = _whitePosGoles[pos.X][pos.Y] = 0;
+                        continue;
+                    }
                     //和pos不能连成五子的不需要updateScore
                     if (i != pos.X
                         && j != pos.Y

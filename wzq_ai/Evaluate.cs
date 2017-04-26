@@ -69,10 +69,6 @@ namespace wzq_ai
         public void GenePosGole(Pos pos, out int black, out int white)
         {
             black = white = 0;
-            if (_border.GetCellStatus(pos) != CellStatus.Empty)
-            {
-                return;
-            }
             foreach (var line in _posContainersDict[pos])
             {
                 UpdatePosLineGole(line, ref black, ref white);
