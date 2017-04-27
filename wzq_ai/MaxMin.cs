@@ -1,84 +1,111 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace wzq_ai
 {
     public class MaxMin
     {
-        private readonly Evaluate evaluate;
-        private readonly CellStatus[][] cellStatusArr;
+        private readonly Border _border;
+        private readonly Neighbor _neighbor;
+        private readonly Random _random;
+        private int _computeTimes;
+        private int _abCut;
+        public Action<int, TimeSpan> ComputeFinished;
 
-        private int recusionTimes;
-        public Action<TimeSpan, int> ComputeFinish;
-
-        public Evaluate Evaluate => evaluate;
-
-        public MaxMin(CellStatus[][] curStatusArr, int width, int height)
+        public MaxMin(Border border)
         {
-            cellStatusArr = curStatusArr;
-            evaluate = new Evaluate(cellStatusArr, width, height);
+            _border = border;
+            _neighbor = new Neighbor(border);
+            _random = new Random(DateTime.Now.Millisecond);
         }
 
-        public GolePos GeneBestPos(CellStatus cellStatus)
+        public Pos FindBestPos(CellStatus curStatus)
         {
-            var startTime = DateTime.Now;
-            recusionTimes = 0;
-            var result = GeneBestPos(cellStatus, 1);
-            ComputeFinish.Invoke(DateTime.Now - startTime, recusionTimes);
-            return result;
-        }
+            _computeTimes = 0;
+            _abCut = 0;
+            var tempTime = DateTime.Now;
+            var isMaxLayer = Configs.Depth % 2 == 1;
 
-        /// <summary>
-        /// 推测最佳位置
-        /// </summary>
-        /// <param name="cellStatus">当前走棋方</param>
-        /// <param name="depth">计算深度</param>
-        /// <returns></returns>
-        private GolePos GeneBestPos(CellStatus cellStatus, int depth)
-        {
-            recusionTimes++;
-            var posGoleStack = new Stack<GolePos>();
-            for (int x = 0; x < cellStatusArr.Length; x++)
+            var posGole = new List<GolePos>();
+            var neighbors = _neighbor.GenPossiblePos(curStatus);
+            foreach (Pos pos in neighbors)
             {
-                for (int y = 0; y < cellStatusArr[x].Length; y++)
+                _border.PutChess(pos, curStatus, Configs.ShowStep);
+                var tempGole = ComputeMaxMin(0, CellStatusHelper.Not(curStatus));
+                _border.UnPutChess(Configs.ShowStep);
+                posGole.Add(new GolePos(tempGole, pos));
+            }
+            if (isMaxLayer)
+            {
+                posGole.Sort((i, j) => i.Gole > j.Gole ? -1 : 1);
+            }
+            else
+            {
+                posGole.Sort((i, j) => j.Gole > i.Gole ? -1 : 1);
+            }
+            ComputeFinished.Invoke(_computeTimes, DateTime.Now - tempTime);
+
+            Configs.LogMsg($"搜索完成，共递归{_computeTimes}次，ab剪枝{_abCut}次");
+            return posGole.First().Pos;
+        }
+
+        private int ComputeMaxMin(int deep, CellStatus curStatus, int? alpha = null, int? beta = null)
+        {
+            if (deep == Configs.Depth)
+            {
+                _computeTimes++;
+                return _border.GetRoleGole(curStatus);
+            }
+            int? best = null;
+            var isMaxLayer = (Configs.Depth - deep)%2 == 0;
+            var neighbors = _neighbor.GenPossiblePos(curStatus);
+            for (int i = 0; i < neighbors.Count; i++)
+            {
+                switch (curStatus)
                 {
-                    if (!ShouldCompute(x, y))
-                    {
-                        continue;
-                    }
-                    var tempPos = new Pos(x, y);
-                    GolePos tempGolePos;
-                    if (depth == 0)
-                    {
-                        tempGolePos = new GolePos(evaluate.ComputePosGole(tempPos), new Stack<Pos>());
-                    }
-                    else
-                    {
-                        cellStatusArr[tempPos.X][tempPos.Y] = cellStatus;
-                        tempGolePos = GeneBestPos(CellStatusHelper.Not(cellStatus), depth - 1);
-                        cellStatusArr[tempPos.X][tempPos.Y] = CellStatus.Empty;
-                    }
-                    
-                    if (posGoleStack.Count != 0 && posGoleStack.Peek().Gole < tempGolePos.Gole)
-                    {
-                        posGoleStack.Clear();
-                    }
-                    if (posGoleStack.Count == 0 || posGoleStack.Peek().Gole == tempGolePos.Gole)
-                    {
-                        tempGolePos.PosStack.Push(tempPos);
-                        posGoleStack.Push(tempGolePos);
-                    }
+                    case CellStatus.Black:
+                        if (_border.GetPosBlackGole(neighbors[i]) >= Evaluate.GOLE_DICT[5])
+                            return Math.Sign(Math.Pow(-1, Configs.Depth - deep)) * (int.MaxValue - 1);
+                        break;
+                    case CellStatus.White:
+                        if (_border.GetPosWhiteGole(neighbors[i]) >= Evaluate.GOLE_DICT[5])
+                            return Math.Sign(Math.Pow(-1, Configs.Depth - deep)) * (int.MaxValue - 1);
+                        break;
                 }
             }
 
-            return posGoleStack.Peek();
-        }
+            for (var i = 0; i < neighbors.Count; i++)
+            {
+                _border.PutChess(neighbors[i], curStatus, Configs.ShowStep);
+                var tempGole = ComputeMaxMin(
+                    deep + 1,
+                    CellStatusHelper.Not(curStatus),
+                    isMaxLayer ? int.MinValue : best,
+                    isMaxLayer ? best : int.MaxValue);
+                _border.UnPutChess(Configs.ShowStep);
+                if (best == null)
+                {
+                    best = tempGole;
+                }
+                else
+                {
+                    best = isMaxLayer
+                        ? Math.Max(best.Value, tempGole)
+                        : Math.Min(best.Value, tempGole);
+                }
 
-        private bool ShouldCompute(int x, int y)
-        {
-            return cellStatusArr[x][y] == CellStatus.Empty;
+                if (i != neighbors.Count - 1)
+                {
+                    if (alpha <= tempGole && tempGole <= beta)
+                    {
+                        _abCut++;
+                        return tempGole;
+                    }
+                }
+            }
+            return best ?? 0;
         }
     }
 }

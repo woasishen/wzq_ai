@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 using wzq_ai;
 
@@ -9,11 +11,19 @@ namespace TestWzq
         public MainForm()
         {
             InitializeComponent();
-            mainControl.StepStatusChanged += UpdateGoleText;
-            mainControl.MaxMin.ComputeFinish += (span, times) =>
+            Configs.ShowStep = showStepCheckBox.Checked;
+            searchDepthComboBox.SelectedIndex = Configs.Depth;
+            mainControl.AutoCompute = autoComputeCheckBox.Checked;
+            mainControl.StepStatusChanged = UpdateGoleText;
+            mainControl.ComputeFinished = (i, span) =>
             {
-                timeLabel.Text = span.ToString();
-                timesLabel.Text = times.ToString();
+                computeTimesLabel.Text = span.ToString();
+                timeLabel.Text = i.ToString();
+            };
+            Configs.LogMsg += s =>
+            {
+                logRichTextBox.AppendText(s);
+                logRichTextBox.AppendText(Environment.NewLine);
             };
         }
 
@@ -39,31 +49,17 @@ namespace TestWzq
 
         private void UpdateGoleText()
         {
-            UpdateGoleLabel(CellStatus.Black);
-            UpdateGoleLabel(CellStatus.White);
-
-            totalGoleLabel.Text = @"total:" + mainControl.TotalGole;
+            totalGoleLabel.Text = mainControl.GetRoleGole().ToString();
         }
 
-        private void UpdateGoleLabel(CellStatus cellStatus)
+        private void showStepCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            Label tempLabel;
-            switch (cellStatus)
-            {
-                case CellStatus.Black:
-                    tempLabel = blackGoleLabel;
-                    break;
-                case CellStatus.White:
-                    tempLabel = whiteGoleLabel;
-                    break;
-                default:
-                    throw new NotSupportedException();
-            }
-            var goleAndCount = mainControl.MaxMin.Evaluate.ComputeGoleAndCount(cellStatus);
-            tempLabel.Text = 
-                cellStatus 
-                + @":" 
-                + goleAndCount["gole"];
+            Configs.ShowStep = showStepCheckBox.Checked;
+        }
+
+        private void searchDepthComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Configs.Depth = Convert.ToInt32(searchDepthComboBox.SelectedItem);
         }
     }
 }

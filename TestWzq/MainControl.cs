@@ -9,8 +9,6 @@ namespace TestWzq
 {
     public partial class MainControl : UserControl
     {
-        private const int CELL_W = 15;
-        private const int CELL_H = 15;
         private const float ITEM_SIZE_SCALE = 0.5f;
         private static readonly Dictionary<CellStatus, Brush> CellBrush =
             new Dictionary<CellStatus, Brush>
@@ -19,104 +17,83 @@ namespace TestWzq
                 {CellStatus.White, new SolidBrush(Color.White)}
             };
 
-        private bool gameOver;
-        private float cellWStep;
-        private float cellHStep;
-        private float itemDiameter;
+        private float _cellWStep;
+        private float _cellHStep;
+        private float _itemDiameter;
 
-        private readonly MaxMin maxMin;
-        private readonly CellStatus[][] cellArr;
-        private readonly Pen linePen = new Pen(Color.Black, 1);
-        private readonly Brush numBrush = new SolidBrush(Color.Red);
-        private readonly Brush gameOverBrush = new SolidBrush(Color.Green);
-        private readonly Pen curStepTips = new Pen(Color.Green, 3);
+        private readonly Pen _linePen = new Pen(Color.Black, 1);
+        private readonly Brush _numBrush = new SolidBrush(Color.Red);
+        private readonly Brush _gameOverBrush = new SolidBrush(Color.Green);
+        private readonly Pen _curStepTips = new Pen(Color.Green, 3);
 
-        private CellStatus curStatus = CellStatus.Black;
+        private CellStatus _curStatus = CellStatus.Black;
         public CellStatus CurStatus
         {
             private set
             {
+                _curStatus = value;
                 StepStatusChanged.Invoke();
-                curStatus = value;
             }
-            get { return curStatus; }
+            get { return _curStatus; }
         }
 
-        public int TotalGole => steps.Count > 0
-            ? MaxMin.Evaluate.ComputePosGole(steps.Peek())
-            : 0;
-
-        private readonly Stack<Pos> steps = new Stack<Pos>();
         private const float NUM_W = 20;
         private const float NUM_H = 20;
-
-        public MaxMin MaxMin => maxMin;
+        private readonly Border _border;
 
         public bool AutoCompute { get; set; }
-
+        public Action<int, TimeSpan> ComputeFinished;
         public Action StepStatusChanged { set; get; }
 
         public void GeneNextStep()
         {
-            if (gameOver)
+            if (_border.GameOver)
             {
                 return;
             }
-            var result = maxMin.GeneBestPos(CurStatus);
-            var pos = result.PosStack.Peek();
-            cellArr[pos.X][pos.Y] = CurStatus;
-            CheckGameOver(pos);
+            var pos = _border.FindBestPos(CurStatus);
+            _border.PutChess(pos, CurStatus);
             CurStatus = CellStatusHelper.Not(CurStatus);
-            Refresh();
         }
 
         public void Redo()
         {
-            if (steps.Count == 0)
+            if (!_border.UnPutChess())
             {
                 return;
             }
-            var pos = steps.Pop();
-            cellArr[pos.X][pos.Y] = CellStatus.Empty;
             CurStatus = CellStatusHelper.Not(CurStatus);
-            gameOver = false;
-            Refresh();
         }
 
         public void RestartGame()
         {
-            while (steps.Count > 0)
-            {
-                var tempPos = steps.Pop();
-                cellArr[tempPos.X][tempPos.Y] = CellStatus.Empty;
-            }
+            _border.ClearChess();
             CurStatus = CellStatus.Black;
-            gameOver = false;
-            Refresh();
+        }
+
+        public int GetRoleGole()
+        {
+            return _border.GetRoleGole(CurStatus);
         }
 
         public MainControl()
         {
             InitializeComponent();
-
-            cellArr = new CellStatus[CELL_W][];
-            for (var i = 0; i < cellArr.Length; i++)
-            {
-                cellArr[i] = new CellStatus[CELL_H];
-                for (var j = 0; j < cellArr[i].Length; j++)
-                {
-                    cellArr[i][j] = CellStatus.Empty;
-                }
-            }
-            maxMin = new MaxMin(cellArr, CELL_W, CELL_H);
             ReInitCellSize();
+            _border = new Border
+            {
+                ComputeFinished = (i, span) => ComputeFinished(i, span),
+                ChessChanged = () => Refresh()
+            };
         }
 
         private void ReInitCellSize()
         {
-            cellWStep = ((float)ClientSize.Width - Padding.Left - Padding.Right) / (CELL_W - 1);
-            cellHStep = ((float)ClientSize.Height - Padding.Top - Padding.Bottom) / (CELL_H - 1);
-            itemDiameter = Math.Min(cellWStep, cellHStep) * ITEM_SIZE_SCALE;
+            _cellWStep = ((float)ClientSize.Width - Padding.Left - Padding.Right)
+                / (Configs.BORDER_SIZE - 1);
+            _cellHStep = ((float)ClientSize.Height - Padding.Top - Padding.Bottom)
+                / (Configs.BORDER_SIZE - 1);
+            _itemDiameter = Math.Min(_cellWStep, _cellHStep) * ITEM_SIZE_SCALE;
         }
 
         #region DrawView
@@ -128,7 +105,6 @@ namespace TestWzq
             DrawLines(e.Graphics);
             DrawNums(e.Graphics);
             DrawCells(e.Graphics);
-
             DrawGameOver(e.Graphics);
         }
 
@@ -137,21 +113,21 @@ namespace TestWzq
             g.DrawString(
                 "0",
                 DefaultFont,
-                numBrush,
+                _numBrush,
                 new RectangleF(Padding.Left - NUM_W, Padding.Top - NUM_H, NUM_W, NUM_H),
                 new StringFormat
                 {
                     Alignment = StringAlignment.Far,
                     LineAlignment = StringAlignment.Far
                 });
-            for (int i = 1; i < CELL_W; i++)
+            for (var i = 1; i < Configs.BORDER_SIZE; i++)
             {
                 g.DrawString(
                     i.ToString(),
                     DefaultFont,
-                    numBrush,
+                    _numBrush,
                     new RectangleF(
-                        i * cellWStep + Padding.Left - NUM_W / 2,
+                        i * _cellWStep + Padding.Left - NUM_W / 2,
                         Padding.Top - NUM_H,
                         NUM_W,
                         NUM_H),
@@ -161,15 +137,15 @@ namespace TestWzq
                         LineAlignment = StringAlignment.Far
                     });
             }
-            for (int i = 1; i < CELL_H; i++)
+            for (var i = 1; i < Configs.BORDER_SIZE; i++)
             {
                 g.DrawString(
                     i.ToString(),
                     DefaultFont,
-                    numBrush,
+                    _numBrush,
                     new RectangleF(
                         Padding.Left - NUM_W,
-                        i * cellHStep + Padding.Top - NUM_H / 2,
+                        i * _cellHStep + Padding.Top - NUM_H / 2,
                         NUM_W,
                         NUM_H),
                     new StringFormat
@@ -182,56 +158,56 @@ namespace TestWzq
 
         private void DrawLines(Graphics g)
         {
-            if (gameOver)
+            if (_border.GameOver)
             {
                 return;
             }
-            for (var i = 0; i < CELL_W; i++)
+            for (var i = 0; i < Configs.BORDER_SIZE; i++)
             {
-                g.DrawLine(linePen,
-                    i * cellWStep + Padding.Left,
+                g.DrawLine(_linePen,
+                    i * _cellWStep + Padding.Left,
                     Padding.Top,
-                    i * cellWStep + Padding.Left,
+                    i * _cellWStep + Padding.Left,
                     ClientSize.Height - Padding.Bottom);
             }
-            for (var i = 0; i < CELL_H; i++)
+            for (var i = 0; i < Configs.BORDER_SIZE; i++)
             {
-                g.DrawLine(linePen,
+                g.DrawLine(_linePen,
                     Padding.Left,
-                    i * cellHStep + Padding.Top,
+                    i * _cellHStep + Padding.Top,
                     ClientSize.Width - Padding.Right,
-                    i * cellHStep + Padding.Top);
+                    i * _cellHStep + Padding.Top);
             }
         }
 
         private void DrawCells(Graphics g)
         {
-            for (var i = 0; i < CELL_W; i++)
+            for (var i = 0; i < Configs.BORDER_SIZE; i++)
             {
-                for (var j = 0; j < CELL_H; j++)
+                for (var j = 0; j < Configs.BORDER_SIZE; j++)
                 {
-                    if (cellArr[i][j] == CellStatus.Empty)
+                    if (_border.GetCellStatus(i, j) == CellStatus.Empty)
                     {
                         continue;
                     }
 
-                    g.FillEllipse(CellBrush[cellArr[i][j]],
-                        Padding.Left + i * cellWStep - itemDiameter / 2,
-                        Padding.Top + j * cellHStep - itemDiameter / 2,
-                        itemDiameter,
-                        itemDiameter);
-                    if (i == steps.Peek().X && j == steps.Peek().Y)
+                    g.FillEllipse(CellBrush[_border.GetCellStatus(i, j)],
+                        Padding.Left + i * _cellWStep - _itemDiameter / 2,
+                        Padding.Top + j * _cellHStep - _itemDiameter / 2,
+                        _itemDiameter,
+                        _itemDiameter);
+                    if (i == _border.LastStepPos.X && j == _border.LastStepPos.Y)
                     {
-                        g.DrawLine(curStepTips,
-                            Padding.Left + i * cellWStep - -itemDiameter / 2,
-                            Padding.Top + j * cellHStep,
-                            Padding.Left + i * cellWStep + -itemDiameter / 2,
-                            Padding.Top + j * cellHStep);
-                        g.DrawLine(curStepTips,
-                            Padding.Left + i * cellWStep,
-                            Padding.Top + j * cellHStep - -itemDiameter / 2,
-                            Padding.Left + i * cellWStep,
-                            Padding.Top + j * cellHStep + -itemDiameter / 2);
+                        g.DrawLine(_curStepTips,
+                            Padding.Left + i * _cellWStep - -_itemDiameter / 2,
+                            Padding.Top + j * _cellHStep,
+                            Padding.Left + i * _cellWStep + -_itemDiameter / 2,
+                            Padding.Top + j * _cellHStep);
+                        g.DrawLine(_curStepTips,
+                            Padding.Left + i * _cellWStep,
+                            Padding.Top + j * _cellHStep - -_itemDiameter / 2,
+                            Padding.Left + i * _cellWStep,
+                            Padding.Top + j * _cellHStep + -_itemDiameter / 2);
                     }
                 }
             }
@@ -239,7 +215,7 @@ namespace TestWzq
 
         private void DrawGameOver(Graphics g)
         {
-            if (!gameOver)
+            if (!_border.GameOver)
             {
                 return;
             }
@@ -247,7 +223,7 @@ namespace TestWzq
             g.DrawString(
                 "五子连珠" + str,
                 new Font(FontFamily.GenericSerif, 30), 
-                gameOverBrush,   
+                _gameOverBrush,   
                 ClientRectangle,
                 new StringFormat
                 {
@@ -261,39 +237,30 @@ namespace TestWzq
         protected override void OnClientSizeChanged(EventArgs e)
         {
             base.OnClientSizeChanged(e);
-            Refresh();
             ReInitCellSize();
+            Refresh();
         }
 
         private void MainControl_MouseClick(object sender, MouseEventArgs e)
         {
-            if (gameOver)
+            if (_border.GameOver)
             {
                 return;
             }
-            var x = (int)Math.Round((e.X - Padding.Left) / cellWStep);
-            var y = (int)Math.Round((e.Y - Padding.Top) / cellHStep);
-            if (x < 0 || y < 0 || x > CELL_W || y > CELL_H || cellArr[x][y] != CellStatus.Empty)
+            var x = (int)Math.Round((e.X - Padding.Left) / _cellWStep);
+            var y = (int)Math.Round((e.Y - Padding.Top) / _cellHStep);
+            if (x < 0 || y < 0 
+                || x > Configs.BORDER_SIZE || y > Configs.BORDER_SIZE 
+                || _border.GetCellStatus(x ,y) != CellStatus.Empty)
             {
                 return;
             }
-
-            cellArr[x][y] = CurStatus;
-            CheckGameOver(new Pos(x, y));
+            var pos = new Pos(x, y);
+            _border.PutChess(pos, CurStatus);
             CurStatus = CellStatusHelper.Not(CurStatus);
-            Refresh();
             if (AutoCompute)
             {
                 GeneNextStep();
-            }
-        }
-
-        private void CheckGameOver(Pos pos)
-        {
-            steps.Push(pos);
-            if (maxMin.Evaluate.ComputePosGole(CurStatus, pos) == Evaluate.GOLE_DICT[5])
-            {
-                gameOver = true;
             }
         }
 
