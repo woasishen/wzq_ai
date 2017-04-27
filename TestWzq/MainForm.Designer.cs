@@ -33,6 +33,9 @@
             this.restarBtn = new System.Windows.Forms.Button();
             this.redo = new System.Windows.Forms.Button();
             this.bottomPanel = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.searchDepthComboBox = new System.Windows.Forms.ComboBox();
+            this.showStepCheckBox = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.blackGoleLabel = new System.Windows.Forms.Label();
             this.whiteGoleLabel = new System.Windows.Forms.Label();
@@ -42,7 +45,6 @@
             this.rightPanel = new System.Windows.Forms.Panel();
             this.logRichTextBox = new System.Windows.Forms.RichTextBox();
             this.mainControl = new TestWzq.MainControl();
-            this.showStepCheckBox = new System.Windows.Forms.CheckBox();
             this.bottomPanel.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             this.rightPanel.SuspendLayout();
@@ -95,6 +97,8 @@
             // 
             // bottomPanel
             // 
+            this.bottomPanel.Controls.Add(this.label1);
+            this.bottomPanel.Controls.Add(this.searchDepthComboBox);
             this.bottomPanel.Controls.Add(this.showStepCheckBox);
             this.bottomPanel.Controls.Add(this.redo);
             this.bottomPanel.Controls.Add(this.computeBtn);
@@ -105,6 +109,43 @@
             this.bottomPanel.Name = "bottomPanel";
             this.bottomPanel.Size = new System.Drawing.Size(940, 32);
             this.bottomPanel.TabIndex = 8;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(412, 11);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(65, 12);
+            this.label1.TabIndex = 8;
+            this.label1.Text = "计算层数：";
+            // 
+            // searchDepthComboBox
+            // 
+            this.searchDepthComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.searchDepthComboBox.FormattingEnabled = true;
+            this.searchDepthComboBox.Items.AddRange(new object[] {
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"});
+            this.searchDepthComboBox.Location = new System.Drawing.Point(483, 6);
+            this.searchDepthComboBox.Name = "searchDepthComboBox";
+            this.searchDepthComboBox.Size = new System.Drawing.Size(51, 20);
+            this.searchDepthComboBox.TabIndex = 7;
+            this.searchDepthComboBox.SelectedIndexChanged += new System.EventHandler(this.searchDepthComboBox_SelectedIndexChanged);
+            // 
+            // showStepCheckBox
+            // 
+            this.showStepCheckBox.AutoSize = true;
+            this.showStepCheckBox.Location = new System.Drawing.Point(280, 9);
+            this.showStepCheckBox.Name = "showStepCheckBox";
+            this.showStepCheckBox.Size = new System.Drawing.Size(96, 16);
+            this.showStepCheckBox.TabIndex = 6;
+            this.showStepCheckBox.Text = "显示思考步骤";
+            this.showStepCheckBox.UseVisualStyleBackColor = true;
+            this.showStepCheckBox.CheckedChanged += new System.EventHandler(this.showStepCheckBox_CheckedChanged);
             // 
             // tableLayoutPanel
             // 
@@ -208,17 +249,6 @@
             this.mainControl.StepStatusChanged = null;
             this.mainControl.TabIndex = 9;
             // 
-            // showStepCheckBox
-            // 
-            this.showStepCheckBox.AutoSize = true;
-            this.showStepCheckBox.Location = new System.Drawing.Point(280, 9);
-            this.showStepCheckBox.Name = "showStepCheckBox";
-            this.showStepCheckBox.Size = new System.Drawing.Size(96, 16);
-            this.showStepCheckBox.TabIndex = 6;
-            this.showStepCheckBox.Text = "显示思考步骤";
-            this.showStepCheckBox.UseVisualStyleBackColor = true;
-            this.showStepCheckBox.CheckedChanged += new System.EventHandler(this.showStepCheckBox_CheckedChanged);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -256,5 +286,7 @@
         private System.Windows.Forms.Label whiteGoleLabel;
         private System.Windows.Forms.Label totalGoleLabel;
         private System.Windows.Forms.CheckBox showStepCheckBox;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox searchDepthComboBox;
     }
 }

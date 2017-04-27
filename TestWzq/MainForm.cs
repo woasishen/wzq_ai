@@ -12,6 +12,7 @@ namespace TestWzq
         {
             InitializeComponent();
             Configs.ShowStep = showStepCheckBox.Checked;
+            searchDepthComboBox.SelectedIndex = Configs.Depth;
             mainControl.AutoCompute = autoComputeCheckBox.Checked;
             mainControl.StepStatusChanged = UpdateGoleText;
             mainControl.ComputeFinished = (i, span) =>
@@ -54,6 +55,11 @@ namespace TestWzq
         private void showStepCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             Configs.ShowStep = showStepCheckBox.Checked;
+        }
+
+        private void searchDepthComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Configs.Depth = Convert.ToInt32(searchDepthComboBox.SelectedItem);
         }
     }
 }

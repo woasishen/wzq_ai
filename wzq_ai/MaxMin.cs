@@ -26,18 +26,25 @@ namespace wzq_ai
             _computeTimes = 0;
             _abCut = 0;
             var tempTime = DateTime.Now;
+            var isMaxLayer = Configs.Depth % 2 == 1;
 
             var posGole = new List<GolePos>();
             var neighbors = _neighbor.GenPossiblePos(curStatus);
             foreach (Pos pos in neighbors)
             {
                 _border.PutChess(pos, curStatus, Configs.ShowStep);
-                var tempGole = Math.Sign(Math.Pow(-1, Configs.DEPTH - 1)) * 
-                    ComputeMaxMin(0, CellStatusHelper.Not(curStatus));
+                var tempGole = ComputeMaxMin(0, CellStatusHelper.Not(curStatus));
                 _border.UnPutChess(Configs.ShowStep);
                 posGole.Add(new GolePos(tempGole, pos));
             }
-            posGole.Sort((i,j) => i.Gole > j.Gole ? -1 : 1);
+            if (isMaxLayer)
+            {
+                posGole.Sort((i, j) => i.Gole > j.Gole ? -1 : 1);
+            }
+            else
+            {
+                posGole.Sort((i, j) => j.Gole > i.Gole ? -1 : 1);
+            }
             ComputeFinished.Invoke(_computeTimes, DateTime.Now - tempTime);
 
             Configs.LogMsg($"搜索完成，共递归{_computeTimes}次，ab剪枝{_abCut}次");
@@ -46,13 +53,13 @@ namespace wzq_ai
 
         private int ComputeMaxMin(int deep, CellStatus curStatus, int? alpha = null, int? beta = null)
         {
-            if (deep == Configs.DEPTH)
+            if (deep == Configs.Depth)
             {
                 _computeTimes++;
                 return _border.GetRoleGole(curStatus);
             }
             int? best = null;
-            var isMaxLayer = (Configs.DEPTH - deep)%2 == 1;
+            var isMaxLayer = (Configs.Depth - deep)%2 == 0;
             var neighbors = _neighbor.GenPossiblePos(curStatus);
             for (int i = 0; i < neighbors.Count; i++)
             {
@@ -60,11 +67,11 @@ namespace wzq_ai
                 {
                     case CellStatus.Black:
                         if (_border.GetPosBlackGole(neighbors[i]) >= Evaluate.GOLE_DICT[5])
-                            return Math.Sign(Math.Pow(-1, Configs.DEPTH - deep)) * (int.MaxValue - 1);
+                            return Math.Sign(Math.Pow(-1, Configs.Depth - deep)) * (int.MaxValue - 1);
                         break;
                     case CellStatus.White:
                         if (_border.GetPosWhiteGole(neighbors[i]) >= Evaluate.GOLE_DICT[5])
-                            return Math.Sign(Math.Pow(-1, Configs.DEPTH - deep)) * (int.MaxValue - 1);
+                            return Math.Sign(Math.Pow(-1, Configs.Depth - deep)) * (int.MaxValue - 1);
                         break;
                 }
             }
