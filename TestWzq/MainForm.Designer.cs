@@ -45,6 +45,7 @@
             this.rightPanel = new System.Windows.Forms.Panel();
             this.logRichTextBox = new System.Windows.Forms.RichTextBox();
             this.mainControl = new TestWzq.MainControl();
+            this.useMaxMinCheckBox = new System.Windows.Forms.CheckBox();
             this.bottomPanel.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             this.rightPanel.SuspendLayout();
@@ -65,7 +66,7 @@
             // 
             this.autoComputeCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.autoComputeCheckBox.AutoSize = true;
-            this.autoComputeCheckBox.Location = new System.Drawing.Point(141, 9);
+            this.autoComputeCheckBox.Location = new System.Drawing.Point(251, 10);
             this.autoComputeCheckBox.Name = "autoComputeCheckBox";
             this.autoComputeCheckBox.Size = new System.Drawing.Size(96, 16);
             this.autoComputeCheckBox.TabIndex = 2;
@@ -97,6 +98,7 @@
             // 
             // bottomPanel
             // 
+            this.bottomPanel.Controls.Add(this.useMaxMinCheckBox);
             this.bottomPanel.Controls.Add(this.label1);
             this.bottomPanel.Controls.Add(this.searchDepthComboBox);
             this.bottomPanel.Controls.Add(this.showStepCheckBox);
@@ -113,7 +115,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(412, 11);
+            this.label1.Location = new System.Drawing.Point(522, 12);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(65, 12);
             this.label1.TabIndex = 8;
@@ -130,7 +132,7 @@
             "3",
             "4",
             "5"});
-            this.searchDepthComboBox.Location = new System.Drawing.Point(483, 6);
+            this.searchDepthComboBox.Location = new System.Drawing.Point(593, 8);
             this.searchDepthComboBox.Name = "searchDepthComboBox";
             this.searchDepthComboBox.Size = new System.Drawing.Size(51, 20);
             this.searchDepthComboBox.TabIndex = 7;
@@ -139,7 +141,7 @@
             // showStepCheckBox
             // 
             this.showStepCheckBox.AutoSize = true;
-            this.showStepCheckBox.Location = new System.Drawing.Point(280, 9);
+            this.showStepCheckBox.Location = new System.Drawing.Point(390, 10);
             this.showStepCheckBox.Name = "showStepCheckBox";
             this.showStepCheckBox.Size = new System.Drawing.Size(96, 16);
             this.showStepCheckBox.TabIndex = 6;
@@ -249,6 +251,17 @@
             this.mainControl.StepStatusChanged = null;
             this.mainControl.TabIndex = 9;
             // 
+            // checkBox1
+            // 
+            this.useMaxMinCheckBox.AutoSize = true;
+            this.useMaxMinCheckBox.Location = new System.Drawing.Point(144, 10);
+            this.useMaxMinCheckBox.Name = "useMaxMinCheckBox";
+            this.useMaxMinCheckBox.Size = new System.Drawing.Size(72, 16);
+            this.useMaxMinCheckBox.TabIndex = 9;
+            this.useMaxMinCheckBox.Text = "对抗搜索";
+            this.useMaxMinCheckBox.UseVisualStyleBackColor = true;
+            this.useMaxMinCheckBox.CheckedChanged += new System.EventHandler(this.useMaxMinCheckBox_CheckedChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -288,5 +301,6 @@
         private System.Windows.Forms.CheckBox showStepCheckBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox searchDepthComboBox;
+        private System.Windows.Forms.CheckBox useMaxMinCheckBox;
     }
 }

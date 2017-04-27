@@ -30,6 +30,10 @@ namespace wzq_ai
 
             var posGole = new List<GolePos>();
             var neighbors = _neighbor.GenPossiblePos(curStatus);
+            if (!Configs.UseMaxMin)
+            {
+                return neighbors.First();
+            }
             foreach (Pos pos in neighbors)
             {
                 _border.PutChess(pos, curStatus, Configs.ShowStep);

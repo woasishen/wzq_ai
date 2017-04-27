@@ -12,6 +12,7 @@ namespace TestWzq
         {
             InitializeComponent();
             Configs.ShowStep = showStepCheckBox.Checked;
+            Configs.UseMaxMin = useMaxMinCheckBox.Checked;
             searchDepthComboBox.SelectedIndex = Configs.Depth;
             mainControl.AutoCompute = autoComputeCheckBox.Checked;
             mainControl.StepStatusChanged = UpdateGoleText;
@@ -60,6 +61,11 @@ namespace TestWzq
         private void searchDepthComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             Configs.Depth = Convert.ToInt32(searchDepthComboBox.SelectedItem);
+        }
+
+        private void useMaxMinCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            Configs.UseMaxMin = useMaxMinCheckBox.Checked;
         }
     }
 }
