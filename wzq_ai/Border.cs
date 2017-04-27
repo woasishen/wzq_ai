@@ -87,6 +87,16 @@ namespace wzq_ai
             return _whitePosGoles[x][y];
         }
 
+        public int GetPosBlackGole(Pos pos)
+        {
+            return _blackPosGoles[pos.X][pos.Y];
+        }
+
+        public int GetPosWhiteGole(Pos pos)
+        {
+            return _whitePosGoles[pos.X][pos.Y];
+        }
+
         public int GetPosGole(int x, int y, CellStatus curStatus)
         {
             switch (curStatus)
@@ -191,9 +201,9 @@ namespace wzq_ai
         private void UpdateAffectPosScore(Pos pos)
         {
             var xMin = Math.Max(pos.X - 4, 0);
-            var xMax = Math.Min(pos.X + 4, Configs.BORDER_SIZE);
+            var xMax = Math.Min(pos.X + 5, Configs.BORDER_SIZE);
             var yMin = Math.Max(pos.Y - 4, 0);
-            var yMax = Math.Min(pos.Y + 4, Configs.BORDER_SIZE);
+            var yMax = Math.Min(pos.Y + 5, Configs.BORDER_SIZE);
 
             for (var i = xMin; i < xMax; i++)
             {

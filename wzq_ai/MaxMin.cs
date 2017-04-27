@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace wzq_ai
@@ -26,32 +27,21 @@ namespace wzq_ai
             _abCut = 0;
             var tempTime = DateTime.Now;
 
-            var maxGolePosList = new List<Pos>();
-            var maxGole = int.MinValue;
+            var posGole = new List<GolePos>();
             var neighbors = _neighbor.GenPossiblePos(curStatus);
             foreach (Pos pos in neighbors)
             {
-                _border.PutChess(pos, curStatus, Configs.SHOW_STEP);
+                _border.PutChess(pos, curStatus, Configs.ShowStep);
                 var tempGole = Math.Sign(Math.Pow(-1, Configs.DEPTH - 1)) * 
                     ComputeMaxMin(0, CellStatusHelper.Not(curStatus));
-                _border.UnPutChess(Configs.SHOW_STEP);
-                if (tempGole == maxGole)
-                {
-                    maxGolePosList.Add(pos);
-                }
-                else if (tempGole > maxGole)
-                {
-                    maxGolePosList.Clear();
-                    maxGole = tempGole;
-                    maxGolePosList.Add(pos);
-                }
+                _border.UnPutChess(Configs.ShowStep);
+                posGole.Add(new GolePos(tempGole, pos));
             }
-
-            var index = _random.Next(maxGolePosList.Count);
+            posGole.Sort((i,j) => i.Gole > j.Gole ? -1 : 1);
             ComputeFinished.Invoke(_computeTimes, DateTime.Now - tempTime);
 
             Configs.LogMsg($"搜索完成，共递归{_computeTimes}次，ab剪枝{_abCut}次");
-            return maxGolePosList[index];
+            return posGole.First().Pos;
         }
 
         private int ComputeMaxMin(int deep, CellStatus curStatus, int? alpha = null, int? beta = null)
@@ -64,20 +54,30 @@ namespace wzq_ai
             int? best = null;
             var isMaxLayer = (Configs.DEPTH - deep)%2 == 1;
             var neighbors = _neighbor.GenPossiblePos(curStatus);
+            for (int i = 0; i < neighbors.Count; i++)
+            {
+                switch (curStatus)
+                {
+                    case CellStatus.Black:
+                        if (_border.GetPosBlackGole(neighbors[i]) >= Evaluate.GOLE_DICT[5])
+                            return Math.Sign(Math.Pow(-1, Configs.DEPTH - deep)) * (int.MaxValue - 1);
+                        break;
+                    case CellStatus.White:
+                        if (_border.GetPosWhiteGole(neighbors[i]) >= Evaluate.GOLE_DICT[5])
+                            return Math.Sign(Math.Pow(-1, Configs.DEPTH - deep)) * (int.MaxValue - 1);
+                        break;
+                }
+            }
 
             for (var i = 0; i < neighbors.Count; i++)
             {
-                if (_border.PutChess(neighbors[i], curStatus, Configs.SHOW_STEP))
-                {
-                    _border.UnPutChess(Configs.SHOW_STEP);
-                    return Math.Sign(Math.Pow(-1, Configs.DEPTH - deep)) * int.MaxValue;
-                }
+                _border.PutChess(neighbors[i], curStatus, Configs.ShowStep);
                 var tempGole = ComputeMaxMin(
                     deep + 1,
                     CellStatusHelper.Not(curStatus),
                     isMaxLayer ? int.MinValue : best,
                     isMaxLayer ? best : int.MaxValue);
-                _border.UnPutChess(Configs.SHOW_STEP);
+                _border.UnPutChess(Configs.ShowStep);
                 if (best == null)
                 {
                     best = tempGole;

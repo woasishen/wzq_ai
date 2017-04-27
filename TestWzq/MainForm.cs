@@ -11,6 +11,7 @@ namespace TestWzq
         public MainForm()
         {
             InitializeComponent();
+            Configs.ShowStep = showStepCheckBox.Checked;
             mainControl.AutoCompute = autoComputeCheckBox.Checked;
             mainControl.StepStatusChanged = UpdateGoleText;
             mainControl.ComputeFinished = (i, span) =>
@@ -48,6 +49,11 @@ namespace TestWzq
         private void UpdateGoleText()
         {
             totalGoleLabel.Text = mainControl.GetRoleGole().ToString();
+        }
+
+        private void showStepCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            Configs.ShowStep = showStepCheckBox.Checked;
         }
     }
 }

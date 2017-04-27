@@ -16,7 +16,9 @@ namespace wzq_ai
         public List<Pos> GenPossiblePos(CellStatus curStatus)
         {
             var five = new List<Pos>();
-            var four = new List<Pos>();
+            var selfDoubleFour = new List<Pos>();
+            var otherDoubleFour = new List<Pos>();
+            var selfFour = new List<Pos>();
             var other = new List<GolePos>();
             for (int i = 0; i < Configs.BORDER_SIZE; i++)
             {
@@ -33,9 +35,7 @@ namespace wzq_ai
                             if ((curStatus == CellStatus.Black && black >= Evaluate.GOLE_DICT[5]) ||
                                 (curStatus == CellStatus.White && white >= Evaluate.GOLE_DICT[5]))
                             {
-                                five.Clear();
-                                five.Add(new Pos(i, j));
-                                break;
+                                return new List<Pos> {new Pos(i, j)};
                             }
                             five.Add(new Pos(i, j));
                             continue;
@@ -45,12 +45,16 @@ namespace wzq_ai
                             if ((curStatus == CellStatus.Black && black >= 2* Evaluate.GOLE_DICT[4]) ||
                                 (curStatus == CellStatus.White && white >= 2* Evaluate.GOLE_DICT[4]))
                             {
-                                four.Clear();
-                                four.Add(new Pos(i, j));
-                                break;
+                                selfDoubleFour.Add(new Pos(i, j));
+                                continue;
                             }
-                            four.Add(new Pos(i, j));
+                            otherDoubleFour.Add(new Pos(i, j));
                             continue;
+                        }
+                        if ((curStatus == CellStatus.Black && black >= Evaluate.GOLE_DICT[4]) ||
+                            (curStatus == CellStatus.White && white >= Evaluate.GOLE_DICT[4]))
+                        {
+                            selfFour.Add(new Pos(i, j));
                         }
                     }
                     other.Add(new GolePos(posGole, new Pos(i, j)));
@@ -60,9 +64,14 @@ namespace wzq_ai
             {
                 return five;
             }
-            if (four.Any())
+            if (selfDoubleFour.Any())
             {
-                return four;
+                return selfDoubleFour;
+            }
+            if (otherDoubleFour.Any())
+            {
+                otherDoubleFour.AddRange(selfFour);
+                return otherDoubleFour;
             }
             other.Sort((i, j) => j.Gole - i.Gole);
             return other.Take(8).Select(s => s.Pos).ToList();

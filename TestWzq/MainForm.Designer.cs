@@ -42,6 +42,7 @@
             this.rightPanel = new System.Windows.Forms.Panel();
             this.logRichTextBox = new System.Windows.Forms.RichTextBox();
             this.mainControl = new TestWzq.MainControl();
+            this.showStepCheckBox = new System.Windows.Forms.CheckBox();
             this.bottomPanel.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             this.rightPanel.SuspendLayout();
@@ -94,6 +95,7 @@
             // 
             // bottomPanel
             // 
+            this.bottomPanel.Controls.Add(this.showStepCheckBox);
             this.bottomPanel.Controls.Add(this.redo);
             this.bottomPanel.Controls.Add(this.computeBtn);
             this.bottomPanel.Controls.Add(this.autoComputeCheckBox);
@@ -206,6 +208,17 @@
             this.mainControl.StepStatusChanged = null;
             this.mainControl.TabIndex = 9;
             // 
+            // showStepCheckBox
+            // 
+            this.showStepCheckBox.AutoSize = true;
+            this.showStepCheckBox.Location = new System.Drawing.Point(280, 9);
+            this.showStepCheckBox.Name = "showStepCheckBox";
+            this.showStepCheckBox.Size = new System.Drawing.Size(96, 16);
+            this.showStepCheckBox.TabIndex = 6;
+            this.showStepCheckBox.Text = "显示思考步骤";
+            this.showStepCheckBox.UseVisualStyleBackColor = true;
+            this.showStepCheckBox.CheckedChanged += new System.EventHandler(this.showStepCheckBox_CheckedChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -242,5 +255,6 @@
         private System.Windows.Forms.Label blackGoleLabel;
         private System.Windows.Forms.Label whiteGoleLabel;
         private System.Windows.Forms.Label totalGoleLabel;
+        private System.Windows.Forms.CheckBox showStepCheckBox;
     }
 }
