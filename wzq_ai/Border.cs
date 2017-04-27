@@ -76,6 +76,17 @@ namespace wzq_ai
         #endregion
 
         #region 计算得分
+
+        public int GetPosBlackGole(int x, int y)
+        {
+            return _blackPosGoles[x][y];
+        }
+
+        public int GetPosWhiteGole(int x, int y)
+        {
+            return _whitePosGoles[x][y];
+        }
+
         public int GetPosGole(int x, int y, CellStatus curStatus)
         {
             switch (curStatus)

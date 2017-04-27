@@ -11,6 +11,7 @@ namespace TestWzq
         public MainForm()
         {
             InitializeComponent();
+            mainControl.AutoCompute = autoComputeCheckBox.Checked;
             mainControl.StepStatusChanged = UpdateGoleText;
             mainControl.ComputeFinished = (i, span) =>
             {

@@ -8,7 +8,7 @@ namespace wzq_ai
 {
     public static class Configs
     {
-        public const int DEPTH = 4;
+        public const int DEPTH = 3;
         public const int BORDER_SIZE = 15;
 
         public const bool SHOW_STEP = true;

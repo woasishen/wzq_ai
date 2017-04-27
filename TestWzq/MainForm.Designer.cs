@@ -34,14 +34,14 @@
             this.redo = new System.Windows.Forms.Button();
             this.bottomPanel = new System.Windows.Forms.Panel();
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.blackGoleLabel = new System.Windows.Forms.Label();
+            this.whiteGoleLabel = new System.Windows.Forms.Label();
+            this.totalGoleLabel = new System.Windows.Forms.Label();
             this.timeLabel = new System.Windows.Forms.Label();
             this.computeTimesLabel = new System.Windows.Forms.Label();
             this.rightPanel = new System.Windows.Forms.Panel();
             this.logRichTextBox = new System.Windows.Forms.RichTextBox();
             this.mainControl = new TestWzq.MainControl();
-            this.blackGoleLabel = new System.Windows.Forms.Label();
-            this.totalGoleLabel = new System.Windows.Forms.Label();
-            this.whiteGoleLabel = new System.Windows.Forms.Label();
             this.bottomPanel.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             this.rightPanel.SuspendLayout();
@@ -62,8 +62,6 @@
             // 
             this.autoComputeCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.autoComputeCheckBox.AutoSize = true;
-            this.autoComputeCheckBox.Checked = true;
-            this.autoComputeCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.autoComputeCheckBox.Location = new System.Drawing.Point(141, 9);
             this.autoComputeCheckBox.Name = "autoComputeCheckBox";
             this.autoComputeCheckBox.Size = new System.Drawing.Size(96, 16);
@@ -127,6 +125,36 @@
             this.tableLayoutPanel.Size = new System.Drawing.Size(940, 27);
             this.tableLayoutPanel.TabIndex = 10;
             // 
+            // blackGoleLabel
+            // 
+            this.blackGoleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.blackGoleLabel.Location = new System.Drawing.Point(3, 0);
+            this.blackGoleLabel.Name = "blackGoleLabel";
+            this.blackGoleLabel.Size = new System.Drawing.Size(182, 27);
+            this.blackGoleLabel.TabIndex = 0;
+            this.blackGoleLabel.Text = "黑方得分：";
+            this.blackGoleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // whiteGoleLabel
+            // 
+            this.whiteGoleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.whiteGoleLabel.Location = new System.Drawing.Point(191, 0);
+            this.whiteGoleLabel.Name = "whiteGoleLabel";
+            this.whiteGoleLabel.Size = new System.Drawing.Size(182, 27);
+            this.whiteGoleLabel.TabIndex = 1;
+            this.whiteGoleLabel.Text = "白方得分：";
+            this.whiteGoleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // totalGoleLabel
+            // 
+            this.totalGoleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.totalGoleLabel.Location = new System.Drawing.Point(379, 0);
+            this.totalGoleLabel.Name = "totalGoleLabel";
+            this.totalGoleLabel.Size = new System.Drawing.Size(182, 27);
+            this.totalGoleLabel.TabIndex = 2;
+            this.totalGoleLabel.Text = "角色得分：";
+            this.totalGoleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // timeLabel
             // 
             this.timeLabel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -177,36 +205,6 @@
             this.mainControl.Size = new System.Drawing.Size(644, 533);
             this.mainControl.StepStatusChanged = null;
             this.mainControl.TabIndex = 9;
-            // 
-            // blackGoleLabel
-            // 
-            this.blackGoleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.blackGoleLabel.Location = new System.Drawing.Point(3, 0);
-            this.blackGoleLabel.Name = "blackGoleLabel";
-            this.blackGoleLabel.Size = new System.Drawing.Size(182, 27);
-            this.blackGoleLabel.TabIndex = 0;
-            this.blackGoleLabel.Text = "黑方得分：";
-            this.blackGoleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // totalGoleLabel
-            // 
-            this.totalGoleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.totalGoleLabel.Location = new System.Drawing.Point(379, 0);
-            this.totalGoleLabel.Name = "totalGoleLabel";
-            this.totalGoleLabel.Size = new System.Drawing.Size(182, 27);
-            this.totalGoleLabel.TabIndex = 2;
-            this.totalGoleLabel.Text = "角色得分：";
-            this.totalGoleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // whiteGoleLabel
-            // 
-            this.whiteGoleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.whiteGoleLabel.Location = new System.Drawing.Point(191, 0);
-            this.whiteGoleLabel.Name = "whiteGoleLabel";
-            this.whiteGoleLabel.Size = new System.Drawing.Size(182, 27);
-            this.whiteGoleLabel.TabIndex = 1;
-            this.whiteGoleLabel.Text = "白方得分：";
-            this.whiteGoleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // MainForm
             // 
